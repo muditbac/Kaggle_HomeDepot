@@ -80,7 +80,9 @@ y_pred = y_pred*2+1
 
 y_pred = y_pred.reshape(len(df_test))
 
-pd.DataFrame({"id": df_test['id'].values, "relevance": y_pred}).to_csv('submission_nn_02.csv',index=False)
+pd.DataFrame({"id": df_test['id'].values, "relevance": y_pred}).to_csv('submission_nn_03.csv',index=False)
+
+
 
 tuned_weights = graph.get_weights()[0]
 # tuned_weights = tuned_weights

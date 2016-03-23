@@ -9,6 +9,8 @@ from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import make_scorer, mean_squared_error
 from sklearn.pipeline import FeatureUnion
 import logging
+import Levenshtein
+
 logging.getLogger().setLevel(logging.INFO)
 
 __author__ = 'mudit'
@@ -16,8 +18,21 @@ __author__ = 'mudit'
 from load_preprocessed import *
 import numpy as np
 from gensim.models import Doc2Vec
-
+from nltk.util import ngrams
 print('- Data and Modules Loaded')
+
+edit_ratio = lambda x, y: Levenshtein.ratio(x, y)
+edit_seqratio = lambda x, y: Levenshtein.seqratio(x, y)
+edit_setratio = lambda x, y: Levenshtein.setratio(x, y)
+
+
+def min_edit_dist(query, text):
+    t_query = query.split()
+    t_text = text.split()
+    s = 0
+    for t in t_query:
+        s += min([Levenshtein.distance(t, token) for token in t_text])
+    return s
 
 
 def str_common_word(str1, str2):
@@ -26,6 +41,7 @@ def str_common_word(str1, str2):
         if str2.find(word) >= 0:
             cnt += 1
     return cnt
+
 
 def str_whole_word(str1, str2, i_):
     cnt = 0
@@ -37,6 +53,19 @@ def str_whole_word(str1, str2, i_):
             cnt += 1
             i_ += len(str1)
     return cnt
+
+def ngram_match(query, string):
+    q_tokens = query.split(' ')
+    max_n = len(q_tokens)
+    total = 0
+    similar = 0
+    for i in range(1,max_n+1):
+        ngms = ngrams(q_tokens, i)
+        for gram in ngms:
+            if string.find(" ".join(gram))>=0:
+                similar += 1
+            total += 1
+    return similar / float(total)
 
 df_all = df_all.fillna('')
 
@@ -52,8 +81,12 @@ df_all['attr'] = df_all['search_term'] + "\t" + df_all['brand']
 df_all['query_in_title'] = df_all['product_info'].map(lambda x: str_whole_word(x.split('\t')[0], x.split('\t')[1], 0))
 df_all['query_in_description'] = df_all['product_info'].map(
     lambda x: str_whole_word(x.split('\t')[0], x.split('\t')[2], 0))
+df_all['edit_ratio_in_title'] = df_all['product_info'].map(
+    lambda x: min_edit_dist(x.split('\t')[0], x.split('\t')[1] + ' ' + x.split('\t')[2]))
 
 df_all['word_in_title'] = df_all['product_info'].map(lambda x: str_common_word(x.split('\t')[0], x.split('\t')[1]))
+df_all['edit_in_title'] = df_all['product_info'].map(lambda x: edit_ratio(x.split('\t')[0], x.split('\t')[1]))
+df_all['seq_edit_in_title'] = df_all['product_info'].map(lambda x: edit_seqratio(x.split('\t')[0], x.split('\t')[1]))
 df_all['word_in_description'] = df_all['product_info'].map(
     lambda x: str_common_word(x.split('\t')[0], x.split('\t')[2]))
 df_all['word_in_brand'] = df_all['attr'].map(lambda x: str_common_word(x.split('\t')[0], x.split('\t')[1]))
@@ -85,6 +118,7 @@ df_test.to_csv(INPUT_PATH + "df_test2.csv", index=False)
 # Implementing Doc2Vec::Gensim
 print("- Extracting Doc2Vec Features")
 
+
 def array_to_document(sources):
     sentences = []
     for id, source in enumerate(sources):
@@ -115,9 +149,10 @@ print('\t- Loaded Doc2Vec model')
 
 weights = [model.docvecs['doc_' + str(id)] for id in range(len(product_info))]
 weights = pd.DataFrame(weights)
-weights.columns = weights.columns.to_series().map(lambda x:'feature_'+str(x))
+weights.columns = weights.columns.to_series().map(lambda x: 'feature_' + str(x))
 
 df_all = pd.concat([df_all, weights], axis=1)
+
 
 # -----------------------------------------------------------------------------------
 # Random Forest Regressor
@@ -128,11 +163,13 @@ def fmean_squared_error(ground_truth, predictions):
 
 RMSE = make_scorer(fmean_squared_error, greater_is_better=False)
 
-feature_cols = ['feature_'+str(x) for x in range(100)]
+feature_cols = ['feature_' + str(x) for x in range(100)]
+
 
 class cust_regression_vals(BaseEstimator, TransformerMixin):
     def fit(self, x, y=None):
         return self
+
     def transform(self, hd_searches):
         d_col_drops = ['id', 'relevance', 'search_term', 'product_title', 'product_description', 'brand',
                        'search_and_prod_info'] + feature_cols
@@ -151,11 +188,11 @@ class cust_txt_col(BaseEstimator, TransformerMixin):
         return data_dict[self.key]
 
 
-df_all['search_and_prod_info'] = (df_all['search_term'] + " " + df_all['product_title'] + " " + df_all['product_description'])#.map(iso_encode).astype(str)
+df_all['search_and_prod_info'] = (df_all['search_term'] + " " + df_all['product_title'] + " " + df_all[
+    'product_description'])  # .map(iso_encode).astype(str)
 
 df_train = df_all[:len_train]
 df_test = df_all[len_train:]
-
 
 rfr = RandomForestRegressor(n_estimators=50, n_jobs=-1, random_state=2016, verbose=1)
 tfidf = TfidfVectorizer(ngram_range=(1, 1), stop_words='english', encoding='ISO-8859-1')
@@ -190,4 +227,13 @@ model = GridSearchCV(estimator=clf, param_grid=param_grid, n_jobs=-1, cv=2, verb
 model.fit(df_train, df_train['relevance'].values)
 
 y_pred = model.predict(df_test)
-pd.DataFrame({"id": df_test['id'].values, "relevance": y_pred}).to_csv('submission_rfr_02.csv',index=False)
+
+
+for i in range(len(y_pred)):
+    if y_pred[i]<1:
+        y_pred[i] = 1
+    elif y_pred[i]>3:
+        y_pred[i] = 3
+
+
+pd.DataFrame({"id": df_test['id'].values, "relevance": y_pred}).to_csv('submission_rfr_spell_02.csv', index=False)
