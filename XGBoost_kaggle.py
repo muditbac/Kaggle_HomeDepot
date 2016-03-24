@@ -1,3 +1,5 @@
+from local_paths import INPUT_PATH
+
 __author__ = 'mudit'
 
 # XGB
@@ -56,13 +58,13 @@ def fmean_squared_error(ground_truth, predictions):
 
 RMSE = make_scorer(fmean_squared_error, greater_is_better=False)
 
-df_test = pd.read_csv('df_test_kag.csv')
-df_train = pd.read_csv('df_train_kag.csv')
+df_test = pd.read_csv(INPUT_PATH + 'df_test2.csv')
+df_train = pd.read_csv(INPUT_PATH+ 'df_train2.csv')
 
 id_test = df_test['id']
 y_train = df_train['relevance'].values
-X_train = df_train[:]
-X_test = df_test[:]
+X_train = df_train[:].fillna(0)
+X_test = df_test[:].fillna(0)
 
 xgb_model = xgb.XGBRegressor(learning_rate=0.05,
                              silent=False,
@@ -81,8 +83,8 @@ xgb_model = xgb.XGBRegressor(learning_rate=0.05,
                              seed=0,
                              missing=None)
 tfidf = TfidfVectorizer(ngram_range=(1, 2), stop_words='english')
-tsvd = TruncatedSVD(n_components=50, random_state=2016)
-tnmf = NMF(n_components=50, random_state=2016)
+tsvd = TruncatedSVD(n_components=20, random_state=2016)
+tnmf = NMF(n_components=20, random_state=2016)
 clf = pipeline.Pipeline([
     ('union', FeatureUnion(
         transformer_list=[
@@ -123,5 +125,20 @@ for i in range(len(y_pred)):
     if y_pred[i]>3.0:
         y_pred[i] = 3.0
 
-pd.DataFrame({"id": id_test, "relevance": y_pred}).to_csv('submission.csv', index=False)
+# y_pred = np.round(y_pred*3)/3.0
+
+pd.DataFrame({"id": id_test, "relevance": y_pred}).to_csv('submission_spell_corrected.csv', index=False)
 print("--- Training & Testing: %s minutes ---" % round(((time.time() - start_time) / 60), 2))
+"""
+New features set without n-gram
+
+Best parameters found by grid search:
+{'xgb_model__max_depth': 10, 'xgb_model__n_estimators': 2000}
+Best CV score:
+-0.469944452368
+--- Training & Testing: 57.47 minutes ---
+
+with n gram and spelling corrected
+Best CV score:
+-0.469065242165
+"""

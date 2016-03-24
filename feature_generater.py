@@ -19,11 +19,11 @@ from load_preprocessed import *
 import numpy as np
 from gensim.models import Doc2Vec
 from nltk.util import ngrams
+
 print('- Data and Modules Loaded')
 
 edit_ratio = lambda x, y: Levenshtein.ratio(x, y)
 edit_seqratio = lambda x, y: Levenshtein.seqratio(x, y)
-edit_setratio = lambda x, y: Levenshtein.setratio(x, y)
 
 
 def min_edit_dist(query, text):
@@ -54,18 +54,20 @@ def str_whole_word(str1, str2, i_):
             i_ += len(str1)
     return cnt
 
+
 def ngram_match(query, string):
     q_tokens = query.split(' ')
     max_n = len(q_tokens)
     total = 0
     similar = 0
-    for i in range(1,max_n+1):
+    for i in range(1, max_n + 1):
         ngms = ngrams(q_tokens, i)
         for gram in ngms:
-            if string.find(" ".join(gram))>=0:
+            if string.find(" ".join(gram)) >= 0:
                 similar += 1
             total += 1
     return similar / float(total)
+
 
 df_all = df_all.fillna('')
 
@@ -81,8 +83,9 @@ df_all['attr'] = df_all['search_term'] + "\t" + df_all['brand']
 df_all['query_in_title'] = df_all['product_info'].map(lambda x: str_whole_word(x.split('\t')[0], x.split('\t')[1], 0))
 df_all['query_in_description'] = df_all['product_info'].map(
     lambda x: str_whole_word(x.split('\t')[0], x.split('\t')[2], 0))
-df_all['edit_ratio_in_title'] = df_all['product_info'].map(
+df_all['edit_dist_in_info'] = df_all['product_info'].map(
     lambda x: min_edit_dist(x.split('\t')[0], x.split('\t')[1] + ' ' + x.split('\t')[2]))
+df_all['edit_ratio_in_info'] = df_all['edit_dist_in_info'] / df_all['len_of_query']
 
 df_all['word_in_title'] = df_all['product_info'].map(lambda x: str_common_word(x.split('\t')[0], x.split('\t')[1]))
 df_all['edit_in_title'] = df_all['product_info'].map(lambda x: edit_ratio(x.split('\t')[0], x.split('\t')[1]))
@@ -94,6 +97,8 @@ df_all['word_in_brand'] = df_all['attr'].map(lambda x: str_common_word(x.split('
 df_all['ratio_title'] = df_all['word_in_title'] / df_all['len_of_query']
 df_all['ratio_description'] = df_all['word_in_description'] / df_all['len_of_query']
 df_all['ratio_brand'] = df_all['word_in_brand'] / df_all['len_of_brand']
+df_all['ngram_match_title'] = df_all['product_info'].map(lambda x: ngram_match(x.split('\t')[0], x.split('\t')[1]))
+df_all['ngram_match_description'] = df_all['product_info'].map(lambda x: ngram_match(x.split('\t')[0], x.split('\t')[2]))
 
 df_brand = pd.unique(df_all.brand.ravel())
 d = {}
@@ -218,7 +223,7 @@ clf = pipeline.Pipeline([
             'txt3': 0.75,
             'txt4': 0.5
         },
-        # n_jobs = -1
+        n_jobs = -1
     )),
     ('rfr', rfr)])
 
@@ -228,12 +233,10 @@ model.fit(df_train, df_train['relevance'].values)
 
 y_pred = model.predict(df_test)
 
-
 for i in range(len(y_pred)):
-    if y_pred[i]<1:
+    if y_pred[i] < 1:
         y_pred[i] = 1
-    elif y_pred[i]>3:
+    elif y_pred[i] > 3:
         y_pred[i] = 3
-
 
 pd.DataFrame({"id": df_test['id'].values, "relevance": y_pred}).to_csv('submission_rfr_spell_02.csv', index=False)

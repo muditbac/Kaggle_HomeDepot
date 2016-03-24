@@ -6,7 +6,6 @@ import snowballstemmer
 import re
 import time
 import logging
-import enchant
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -23,7 +22,13 @@ df_brand = attributes[attributes['name'] == "MFG Brand Name"][['product_uid', 'v
 
 i = 0
 
-spell_checker = enchant.Dict('en_US')
+dict_spell = {}
+
+def load_dict(filename, sep='|'):
+    with open(filename, 'r') as fin:
+        for line in fin:
+            t = line.strip().split(sep)
+            dict_spell[t[0]] = t[1]
 
 
 def string_preprocess(s, spell_check=False):
@@ -62,17 +67,17 @@ def string_preprocess(s, spell_check=False):
     s = s.replace("*", " xbi ")
     s = s.replace(" by ", " xbi ")
     s = re.sub(r"([0-9])( *)\.( *)([0-9])", r"\1.\4", s)
-    s = re.sub(r"([0-9]+)( *)(inches|inch|in|')\.?", r"\1 in. ", s)
-    s = re.sub(r"([0-9]+)( *)(foot|feet|ft|'')\.?", r"\1 ft. ", s)
-    s = re.sub(r"([0-9]+)( *)(pounds|pound|lbs|lb)\.?", r"\1 lb. ", s)
-    s = re.sub(r"([0-9]+)( *)(square|sq) ?\.?(feet|foot|ft)\.?", r"\1 sq.ft. ", s)
-    s = re.sub(r"([0-9]+)( *)(cubic|cu) ?\.?(feet|foot|ft)\.?", r"\1 cu.ft. ", s)
-    s = re.sub(r"([0-9]+)( *)(gallons|gallon|gal)\.?", r"\1 gal. ", s)
-    s = re.sub(r"([0-9]+)( *)(ounces|ounce|oz)\.?", r"\1 oz. ", s)
-    s = re.sub(r"([0-9]+)( *)(centimeters|cm)\.?", r"\1 cm. ", s)
-    s = re.sub(r"([0-9]+)( *)(milimeters|mm)\.?", r"\1 mm. ", s)
+    s = re.sub(r"([0-9]+)( *)(inches|inch|in|')\.? ", r"\1 in. ", s)
+    s = re.sub(r"([0-9]+)( *)(foot|feet|ft|'')\.? ", r"\1 ft. ", s)
+    s = re.sub(r"([0-9]+)( *)(pounds|pound|lbs|lb)\.? ", r"\1 lb. ", s)
+    s = re.sub(r"([0-9]+)( *)(square|sq) ?\.?(feet|foot|ft)\.? ", r"\1 sq.ft. ", s)
+    s = re.sub(r"([0-9]+)( *)(cubic|cu) ?\.?(feet|foot|ft)\.? ", r"\1 cu.ft. ", s)
+    s = re.sub(r"([0-9]+)( *)(gallons|gallon|gal)\.? ", r"\1 gal. ", s)
+    s = re.sub(r"([0-9]+)( *)(ounces|ounce|oz)\.? ", r"\1 oz. ", s)
+    s = re.sub(r"([0-9]+)( *)(centimeters|cm)\.? ", r"\1 cm. ", s)
+    s = re.sub(r"([0-9]+)( *)(milimeters|mm)\.? ", r"\1 mm. ", s)
     s = s.replace("°", " degrees ")
-    s = re.sub(r"([0-9]+)( *)(degrees|degree)\.?", r"\1 deg. ", s)
+    s = re.sub(r"([0-9]+)( *)(degrees|degree)\.? ", r"\1 deg. ", s)
     s = s.replace(" v ", " volt. ")
     s = re.sub(r"([0-9]+)( *)(volts|volt)\.?", r"\1 volt. ", s)
     s = re.sub(r"([0-9]+)( *)(watts|watt)\.?", r"\1 watt. ", s)
@@ -81,31 +86,16 @@ def string_preprocess(s, spell_check=False):
     s = s.replace(" . ", " ")
     s = (" ").join([str(strNum[z]) if z in strNum else z for z in s.split(" ")])
     s = s.lower()
+    s = (" ").join([str(dict_spell[z]) if z in dict_spell else z for z in s.split(" ")])
     # text = text.decode('utf-8')
     # text = unicodedata.normalize('NFKD',unicode(text.lower())).encode('ascii', 'ignore')
     # for rep in replace.keys():
     #     for rchr in rep:
     #         if rchr in s:
     #             s = s.replace(rchr, replace[rep])
-    # if not spell_check:
-    #     [spell_checker.add(word) for word in s.split()]
-    # else:
-    #     words = s.split()
-    #     new_s = []
-    #     for word in words:
-    #         if not spell_checker.check(word):
-    #             cword = spell_checker.suggest(word)[0]
-    #             # print('\t\t*Spelling Correcter: %s | %s' % (word, cword))
-    #             new_s.append(cword)
-    #         else:
-    #             new_s.append(word)
-    #     s = " ".join(new_s)
-    #     del new_s, words
-    s = " ".join([spell_checker.suggest(word)[0] if not spell_checker.check(word) else word for word in s.split()])
-    s = s.lower()
     return s
 
-
+load_dict('spelling.txt')
 print('- Processing started %s minutes' % round(((time.time() - start_time) / 60), 2))
 
 final_train = pd.merge(train, descriptions, how="left", on="product_uid")
