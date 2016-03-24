@@ -1,10 +1,14 @@
 import pickle
 import logging
 
-from keras.layers import Embedding, Flatten, Dense
-from keras.models import Graph
 import pandas as pd
 import numpy as np
+
+np.random.seed(2016)
+
+from keras.layers import Embedding, Flatten, Dense
+from keras.models import Graph
+from keras.regularizers import ActivityRegularizer, WeightRegularizer, l2
 from keras.callbacks import ModelCheckpoint, Callback
 
 from local_paths import *
@@ -23,16 +27,19 @@ len_train = len(df_train)
 input_features = pd.DataFrame(input_features).fillna(0).values
 
 cols = ['len_of_query', 'len_of_title',
-                           'len_of_description', 'len_of_brand',
-                           'query_in_title', 'query_in_description', 'edit_dist_in_info',
-                           'edit_ratio_in_info', 'word_in_title', 'edit_in_title',
-                           'seq_edit_in_title', 'word_in_description', 'word_in_brand',
-                           'ratio_title', 'ratio_description', 'ratio_brand', 'ngram_match_title',
-                           'ngram_match_description', 'brand_feature', 'search_term_feature']
-
+        'len_of_description', 'len_of_brand',
+        'query_in_title', 'query_in_description', 'edit_dist_in_info',
+        'edit_ratio_in_info', 'word_in_title', 'edit_in_title',
+        'seq_edit_in_title', 'word_in_description', 'word_in_brand',
+        'ratio_title', 'ratio_description', 'ratio_brand', 'ngram_match_title',
+        'ngram_match_description', 'brand_feature', 'search_term_feature']
 
 input_features = df_train[cols].fillna(0).values
 output = df_train['relevance'].values
+
+product_uid = df_train['product_uid'].values.reshape((1000, 1))
+
+train_query_vectors = train_query_vectors[:1000]
 
 
 class SelectBestValidation(Callback):
@@ -41,7 +48,7 @@ class SelectBestValidation(Callback):
 
     def on_epoch_end(self, epoch, logs={}):
         val_score = logs.get('val_loss')
-        if self.best_validation_score == -1 or val_score<=self.best_validation_score:
+        if self.best_validation_score == -1 or val_score <= self.best_validation_score:
             self.best_validation_score = val_score
             self.weights = graph.get_weights()
             print('Saving model for val_score = %f' % val_score)
@@ -56,7 +63,7 @@ class SelectBestValidation(Callback):
 #                            'search_term_feature']].values
 # output = df_train['relevance'].values
 # train_query_vectors = query_vectors[:len_train]
-
+r = 1e-5
 graph = Graph()
 graph.add_input(name='input_features', input_shape=(input_features.shape[1],))
 graph.add_input(name='product_uid', input_shape=(1,), dtype=int)
@@ -65,15 +72,17 @@ graph.add_node(Embedding(input_dim=len(prod) + 1,
                          output_dim=50,
                          weights=[np.concatenate((np.zeros((1, 50)), product_vectors), axis=0)],
                          trainable=True,
-                         input_length=1),
+                         input_length=1,
+                         W_regularizer=l2(r)),
                name='embedding',
                input='product_uid', )
 graph.add_node(Flatten(), name='flatten', input='embedding')
-graph.add_node(Dense(50, activation='sigmoid'), name='hidden0', inputs=['input_features', 'query_vector', 'flatten'],
+graph.add_node(Dense(50, activation='sigmoid', W_regularizer=l2(r)), name='hidden0',
+               inputs=['input_features', 'query_vector', 'flatten'],
                merge_mode="concat", concat_axis=1)
 # graph.add_node(Dense(50, activation='sigmoid'), name='hidden1', input='hidden0')
 # graph.add_node(Dense(50, activation='sigmoid'), name='hidden2', input='hidden1')
-graph.add_node(Dense(1, activation='sigmoid'), name='output', input='hidden0', create_output=True)
+graph.add_node(Dense(1, activation='sigmoid', W_regularizer=l2(r)), name='output', input='hidden0', create_output=True)
 
 graph.compile(optimizer='adadelta', loss={'output': 'mse'})
 select_best = SelectBestValidation()
@@ -83,7 +92,7 @@ select_best = SelectBestValidation()
 graph.fit(
     {'input_features': input_features, 'product_uid': product_uid, 'query_vector': train_query_vectors,
      'output': (output - 1) / 2},
-    batch_size=256, nb_epoch=100, verbose=1, shuffle=True, callbacks=[select_best], validation_split=0.2)
+    batch_size=64, nb_epoch=500, verbose=1, shuffle=True, callbacks=[select_best], validation_split=0.5)
 
 test_input_features = df_test[cols].values
 

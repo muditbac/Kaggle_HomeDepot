@@ -10,6 +10,7 @@ from sklearn.metrics import make_scorer, mean_squared_error
 from sklearn.pipeline import FeatureUnion
 import logging
 import Levenshtein
+from utils import cust_txt_col, cust_regression_vals
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -119,17 +120,53 @@ df_train.to_csv(INPUT_PATH + "df_train2.csv", index=False)
 df_test.to_csv(INPUT_PATH + "df_test2.csv", index=False)
 
 
+# TF-IDF and other features
+tfidf = TfidfVectorizer(ngram_range=(1, 2), stop_words='english')
+tsvd = TruncatedSVD(n_components=20, random_state=2016)
+tnmf = NMF(n_components=20, random_state=2016)
+fu = FeatureUnion(
+    transformer_list=[
+        ('cst', cust_regression_vals()),
+        ('txt1', pipeline.Pipeline([('s1', cust_txt_col(key='search_term')), ('tfidf1', tfidf), ('tsvd1', tsvd)])),
+        (
+            'txt2',
+            pipeline.Pipeline([('s2', cust_txt_col(key='product_title')), ('tfidf2', tfidf), ('tsvd2', tsvd)])),
+        ('txt3',
+         pipeline.Pipeline([('s3', cust_txt_col(key='product_description')), ('tfidf3', tfidf), ('tsvd3', tsvd)])),
+        ('txt4', pipeline.Pipeline([('s4', cust_txt_col(key='brand')), ('tfidf4', tfidf), ('tsvd4', tsvd)]))
+    ],
+    transformer_weights={
+        'cst': 1.0,
+        'txt1': 0.5,
+        'txt2': 0.25,
+        'txt3': 0.0,
+        'txt4': 0.5
+    },
+    # n_jobs = -1
+)
 
+id_test = df_test['id']
+y_train = df_train['relevance'].values
+X_train = df_train[:].fillna(0)
+X_test = df_test[:].fillna(0)
+
+
+fu.fit(pd.concat((X_train, X_test)))
+X_train = fu.transform(X_train)
+X_test = fu.transform(X_test)
+
+X_train.dump(INPUT_PATH + 'X_train.numpy')
+X_test.dump(INPUT_PATH + 'X_test.numpy')
+y_train.dump(INPUT_PATH + 'y_train.numpy')
+id_test.values.dump(INPUT_PATH + 'id_test.numpy')
 # Implementing Doc2Vec::Gensim
 print("- Extracting Doc2Vec Features")
-
 
 def array_to_document(sources):
     sentences = []
     for id, source in enumerate(sources):
         sentences.append(TaggedDocument(source.split(), ['doc_' + str(id)]))
     return sentences
-
 
 print('\t- Preparing data')
 
@@ -171,26 +208,6 @@ RMSE = make_scorer(fmean_squared_error, greater_is_better=False)
 feature_cols = ['feature_' + str(x) for x in range(100)]
 
 
-class cust_regression_vals(BaseEstimator, TransformerMixin):
-    def fit(self, x, y=None):
-        return self
-
-    def transform(self, hd_searches):
-        d_col_drops = ['id', 'relevance', 'search_term', 'product_title', 'product_description', 'brand',
-                       'search_and_prod_info'] + feature_cols
-        hd_searches = hd_searches.drop(d_col_drops, axis=1).values
-        return hd_searches
-
-
-class cust_txt_col(BaseEstimator, TransformerMixin):
-    def __init__(self, key):
-        self.key = key
-
-    def fit(self, x, y=None):
-        return self
-
-    def transform(self, data_dict):
-        return data_dict[self.key]
 
 
 df_all['search_and_prod_info'] = (df_all['search_term'] + " " + df_all['product_title'] + " " + df_all[
@@ -208,7 +225,7 @@ tpca = PCA(n_components=10)
 clf = pipeline.Pipeline([
     ('union', FeatureUnion(
         transformer_list=[
-            # ('cst',  cust_regression_vals()),
+            ('cst',  cust_regression_vals()),
             ('txt1', pipeline.Pipeline([('s1', cust_txt_col(key='search_term')), ('tfidf1', tfidf), ('tsvd1', tsvd)])),
             ('txt2',
              pipeline.Pipeline([('s2', cust_txt_col(key='search_and_prod_info')), ('tfidf2', tfidf), ('tsvd2', tsvd)])),
