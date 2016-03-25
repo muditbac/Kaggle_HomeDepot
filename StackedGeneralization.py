@@ -60,11 +60,16 @@ Accuracy = 0.935483870968
 """
 
 import numpy as np
+from sklearn.naive_bayes import GaussianNB
+
+np.random.seed(2016)
+
 from sklearn.cross_validation import StratifiedKFold
-from sklearn.linear_model import LogisticRegression, LinearRegression
+from sklearn.linear_model import LogisticRegression, LinearRegression, BayesianRidge
 from sklearn import metrics
 from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor, GradientBoostingRegressor
-
+from sklearn.linear_model import Ridge, Lasso
+from sklearn.utils import shuffle
 from local_paths import INPUT_PATH
 import xgboost as xgb
 
@@ -72,39 +77,66 @@ import xgboost as xgb
 def run(X, Y):
     # The DEV SET will be used for all training and validation purposes
     # The TEST SET will never be used for training, it is the unseen set.
+
+    Y = (Y - 1) / 2
+
     dev_cutoff = int(len(Y) * 2.5 / 5)
+
+    X, Y = shuffle(X, Y)
+
     X_dev = X[:dev_cutoff]
     Y_dev = Y[:dev_cutoff]
     X_test = X[dev_cutoff:]
     Y_test = Y[dev_cutoff:]
 
-    n_trees = 100
-    n_folds = 3
+    n_trees = 500  # Higher is better
+    n_folds = 5  # Higher is better
 
     # Our level 0 classifiers
     clfs = [
-        RandomForestRegressor(n_estimators=n_trees, n_jobs=-1),
-        ExtraTreesRegressor(n_estimators=n_trees * 2, n_jobs=-1),
-        GradientBoostingRegressor(n_estimators=n_trees),
-        xgb.XGBRegressor(learning_rate=0.05,
-                         silent=False,
-                         objective="reg:linear",
-                         nthread=-1,
-                         gamma=0.5,
-                         min_child_weight=5,
-                         max_delta_step=1,
-                         subsample=0.7,
-                         colsample_bytree=0.7,
-                         colsample_bylevel=1,
-                         reg_alpha=0.5,
-                         reg_lambda=1,
-                         scale_pos_weight=1,
-                         base_score=0.5,
-                         seed=0,
-                         missing=None,
-                         n_estimators=n_trees * 2 ,
-                         max_depth=25
-                         )
+        ('BayesianRidge', BayesianRidge(alpha_1=1e-6, alpha_2=1e-6)),
+        ('LinearRegression', LinearRegression(n_jobs=-1)),
+        ('RandomForestRegressor', RandomForestRegressor(n_estimators=n_trees, n_jobs=-1)),
+        ('ExtraTreesRegressor', ExtraTreesRegressor(n_estimators=n_trees * 2, n_jobs=-1)),
+        ('GradientBoostingRegressor', GradientBoostingRegressor(n_estimators=n_trees)),
+        ('XGBLinear', xgb.XGBRegressor(learning_rate=0.05,
+                                       # silent=False,
+                                       objective="reg:linear",
+                                       nthread=-1,
+                                       gamma=0.5,
+                                       min_child_weight=5,
+                                       max_delta_step=1,
+                                       subsample=0.7,
+                                       colsample_bytree=0.7,
+                                       colsample_bylevel=1,
+                                       reg_alpha=0.5,
+                                       reg_lambda=1,
+                                       scale_pos_weight=1,
+                                       base_score=0.5,
+                                       seed=0,
+                                       missing=None,
+                                       n_estimators=n_trees * 2,
+                                       max_depth=25
+                                       )),
+        ('XGBLogistic', xgb.XGBRegressor(learning_rate=0.05,
+                                         # silent=False,
+                                         objective="reg:logistic",
+                                         nthread=-1,
+                                         gamma=0.5,
+                                         min_child_weight=5,
+                                         max_delta_step=1,
+                                         subsample=0.7,
+                                         colsample_bytree=0.7,
+                                         colsample_bylevel=1,
+                                         reg_alpha=0.5,
+                                         reg_lambda=1,
+                                         scale_pos_weight=1,
+                                         base_score=0.5,
+                                         seed=0,
+                                         missing=None,
+                                         n_estimators=n_trees * 2,
+                                         max_depth=25
+                                         ))
     ]
 
     # Ready for cross validation
@@ -119,8 +151,8 @@ def run(X, Y):
     print('blend_test.shape = %s' % (str(blend_test.shape)))
 
     # For each classifier, we train the number of fold times (=len(skf))
-    for j, clf in enumerate(clfs):
-        print('Training classifier [%s]' % (j))
+    for j, (clf_name, clf) in enumerate(clfs):
+        print('Training classifier [%s %s]' % (j, clf_name))
         blend_test_j = np.zeros((X_test.shape[0], len(
             skf)))  # Number of testing data x Number of folds , we will take the mean of the predictions later
         for i, (train_index, cv_index) in enumerate(skf):
@@ -139,13 +171,14 @@ def run(X, Y):
             blend_train[cv_index, j] = clf.predict(X_cv)
             blend_test_j[:, i] = clf.predict(X_test)
         # Take the mean of the predictions of the cross validation set
+        np.concatenate((X_dev, Y_dev.reshape((len(X_dev), 1)), blend_train[:, j].reshape((len(X_dev), 1))),
+                                  axis=1).dump("pickle/" + clf_name + 'Train.numpy')
         blend_test[:, j] = blend_test_j.mean(1)
 
-    print('Y_dev.shape = %s' % (Y_dev.shape))
+    print('Y_dev.shape = %s' % Y_dev.shape)
 
     # Start blending!
     bclf = LinearRegression(n_jobs=-1)
-    # bclf = LogisticRegression(n_jobs=-1, solver='sag', )
 
     # score=cross_val_score(bclf, verbose=20, cv=2, X=blend_train, y=Y_dev)
     bclf.fit(blend_train, Y_dev)
@@ -153,14 +186,17 @@ def run(X, Y):
     # Predict now
     Y_test_predict = bclf.predict(blend_test)
 
-    for i in range(len(Y_test_predict)):
-        if Y_test_predict[i] < 1:
-            Y_test_predict[i] = 1
-        elif Y_test_predict[i] > 3:
-            Y_test_predict[i] = 2
+    # Y_test_predict = 2*Y_test_predict+1
 
-    score = metrics.mean_squared_error(Y_test, Y_test_predict)
+    for i in range(len(Y_test_predict)):
+        if Y_test_predict[i] < 0:
+            Y_test_predict[i] = 0
+        elif Y_test_predict[i] > 1:
+            Y_test_predict[i] = 1
+
+    score = metrics.mean_squared_error(Y_test * 2 + 1, Y_test_predict * 2 + 1)
     print('Accuracy = %s' % (score ** 0.5))
+    print('Weights = %s' % str(bclf.coef_))
 
     return score
 
