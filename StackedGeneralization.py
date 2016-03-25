@@ -59,48 +59,53 @@ Accuracy = 0.935483870968
 
 """
 
+import time
+
 import numpy as np
-from sklearn.naive_bayes import GaussianNB
+import pandas as pd
 
 np.random.seed(2016)
 
 from sklearn.cross_validation import StratifiedKFold
-from sklearn.linear_model import LogisticRegression, LinearRegression, BayesianRidge
+from sklearn.linear_model import LinearRegression, BayesianRidge
 from sklearn import metrics
 from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor, GradientBoostingRegressor
-from sklearn.linear_model import Ridge, Lasso
 from sklearn.utils import shuffle
 from local_paths import INPUT_PATH
 import xgboost as xgb
 
 
-def run(X, Y):
+def run(X, Y, X_test=None):
     # The DEV SET will be used for all training and validation purposes
     # The TEST SET will never be used for training, it is the unseen set.
 
     Y = (Y - 1) / 2
 
-    dev_cutoff = int(len(Y) * 2.5 / 5)
+    if X_test is None:
+        dev_cutoff = int(len(Y) * 2.5 / 5)
 
-    X, Y = shuffle(X, Y)
+        X, Y = shuffle(X, Y)
 
-    X_dev = X[:dev_cutoff]
-    Y_dev = Y[:dev_cutoff]
-    X_test = X[dev_cutoff:]
-    Y_test = Y[dev_cutoff:]
+        X_dev = X[:dev_cutoff]
+        Y_dev = Y[:dev_cutoff]
+        X_test = X[dev_cutoff:]
+        Y_test = Y[dev_cutoff:]
+    else:
+        X_dev = X
+        Y_dev = Y
 
     n_trees = 500  # Higher is better
     n_folds = 5  # Higher is better
 
     # Our level 0 classifiers
     clfs = [
-        ('BayesianRidge', BayesianRidge(alpha_1=1e-6, alpha_2=1e-6)),
+        ('BayesianRidge', BayesianRidge(alpha_1=1e-6, alpha_2=1e-6, verbose=20)),
         ('LinearRegression', LinearRegression(n_jobs=-1)),
-        ('RandomForestRegressor', RandomForestRegressor(n_estimators=n_trees, n_jobs=-1)),
-        ('ExtraTreesRegressor', ExtraTreesRegressor(n_estimators=n_trees * 2, n_jobs=-1)),
-        ('GradientBoostingRegressor', GradientBoostingRegressor(n_estimators=n_trees)),
+        ('RandomForestRegressor', RandomForestRegressor(n_estimators=n_trees, n_jobs=-1, verbose=20)),
+        ('ExtraTreesRegressor', ExtraTreesRegressor(n_estimators=n_trees * 2, n_jobs=-1, verbose=20)),
+        ('GradientBoostingRegressor', GradientBoostingRegressor(n_estimators=n_trees, verbose=20)),
         ('XGBLinear', xgb.XGBRegressor(learning_rate=0.05,
-                                       # silent=False,
+                                       silent=False,
                                        objective="reg:linear",
                                        nthread=-1,
                                        gamma=0.5,
@@ -119,7 +124,7 @@ def run(X, Y):
                                        max_depth=25
                                        )),
         ('XGBLogistic', xgb.XGBRegressor(learning_rate=0.05,
-                                         # silent=False,
+                                         silent=False,
                                          objective="reg:logistic",
                                          nthread=-1,
                                          gamma=0.5,
@@ -172,7 +177,7 @@ def run(X, Y):
             blend_test_j[:, i] = clf.predict(X_test)
         # Take the mean of the predictions of the cross validation set
         np.concatenate((X_dev, Y_dev.reshape((len(X_dev), 1)), blend_train[:, j].reshape((len(X_dev), 1))),
-                                  axis=1).dump("pickle/" + clf_name + 'Train.numpy')
+                       axis=1).dump("pickle/" + clf_name + 'Train.numpy')
         blend_test[:, j] = blend_test_j.mean(1)
 
     print('Y_dev.shape = %s' % Y_dev.shape)
@@ -194,16 +199,23 @@ def run(X, Y):
         elif Y_test_predict[i] > 1:
             Y_test_predict[i] = 1
 
-    score = metrics.mean_squared_error(Y_test * 2 + 1, Y_test_predict * 2 + 1)
-    print('Accuracy = %s' % (score ** 0.5))
-    print('Weights = %s' % str(bclf.coef_))
+    if 'Y_test' in locals():
+        for i, (clf_name, clf) in enumerate(clfs):
+            score = metrics.mean_squared_error(blend_test[:, i] * 2 + 1, Y_test * 2 + 1)
+            print('%s Accuracy = %s' % (clf_name, score ** 0.5))
+        score = metrics.mean_squared_error(Y_test * 2 + 1, Y_test_predict * 2 + 1)
+        print('Accuracy = %s' % (score ** 0.5))
 
-    return score
+    print('Weights = %s' % str(bclf.coef_))
+    return Y_test_predict * 2 + 1
 
 
 if __name__ == '__main__':
     X_train = np.load(INPUT_PATH + 'X_train.numpy')
-    # X_test = np.load(INPUT_PATH + 'X_test.numpy')
+    X_test = np.load(INPUT_PATH + 'X_test.numpy')
     y_train = np.load(INPUT_PATH + 'y_train.numpy')
+    id_test = np.load(INPUT_PATH + 'id_test.numpy')
 
-    run(X_train, y_train)
+    Y_test = run(X_train, y_train, X_test)
+    pd.DataFrame({"id": id_test, "relevance": Y_test}).to_csv('submission/submission_stacked_%s.csv' % time.time(),
+                                                              index=False)
