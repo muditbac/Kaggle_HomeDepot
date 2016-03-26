@@ -4,7 +4,7 @@ import numpy as np
 
 from sklearn.ensemble import ExtraTreesClassifier, RandomForestRegressor
 import pandas as pd
-from local_paths import *
+from configs import *
 
 data_X = pd.read_csv(OUTPUT_PATH + 'X_features.csv')
 

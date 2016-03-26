@@ -32,3 +32,9 @@ def fmean_squared_error(ground_truth, predictions):
 
 
 RMSE = make_scorer(fmean_squared_error, greater_is_better=False)
+
+
+def change_to_int(params, indexes):
+    for index in indexes:
+        params[index] = int(params[index])
+    # return params

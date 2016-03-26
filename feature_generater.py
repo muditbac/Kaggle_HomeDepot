@@ -10,7 +10,7 @@ from sklearn.metrics import make_scorer, mean_squared_error
 from sklearn.pipeline import FeatureUnion
 import logging
 import Levenshtein
-from utils import cust_txt_col, cust_regression_vals
+from utilities import cust_txt_col, cust_regression_vals
 
 logging.getLogger().setLevel(logging.INFO)
 
