@@ -11,7 +11,7 @@ from keras.models import Graph
 from keras.regularizers import ActivityRegularizer, WeightRegularizer, l2
 from keras.callbacks import ModelCheckpoint, Callback
 
-from local_paths import *
+from configs import *
 
 __author__ = 'mudit'
 

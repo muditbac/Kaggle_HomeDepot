@@ -1,4 +1,4 @@
-from local_paths import INPUT_PATH
+from configs import INPUT_PATH
 from utils import RMSE
 
 __author__ = 'mudit'
@@ -12,18 +12,20 @@ from sklearn.grid_search import GridSearchCV
 from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor, GradientBoostingRegressor
 from sklearn.tree import DecisionTreeRegressor
 import numpy as np
-
+from SimpleNN import KerasNN
 import xgboost as xgb
 
 # random.seed(2016)
 
-model_name = 'gbr'
-# Available options ['tree', 'rfr', 'xgb', 'xtree', 'gbr']
+model_name = 'knn'
+# Available options ['tree', 'rfr', 'xgb', 'xtree', 'gbr', 'knn']
 
 X_train = np.load(INPUT_PATH + 'X_train.numpy')
 X_test = np.load(INPUT_PATH + 'X_test.numpy')
 y_train = np.load(INPUT_PATH + 'y_train.numpy')
 id_test = np.load(INPUT_PATH + 'id_test.numpy')
+
+y_train = (y_train - 1.0)/2.0
 
 if model_name == 'rfr':
     level0 = RandomForestRegressor(n_estimators=50, n_jobs=-1, random_state=2016, verbose=1)
@@ -51,14 +53,16 @@ elif model_name == 'tree':
     level0 = DecisionTreeRegressor(random_state=2016)
     param_grid = {'max_features': [25], 'max_depth': [25]}
 elif model_name == 'xtree':
-    level0 = ExtraTreesRegressor(random_state=2016)
+    level0 = ExtraTreesRegressor(random_state=2016, n_jobs=-1)
     param_grid = {'max_features': [25], 'max_depth': [25]}
 elif model_name == 'gbr':
     level0 = GradientBoostingRegressor(random_state=2016, verbose=20)
     param_grid = {'max_features': [25], 'max_depth': [25], 'n_estimators': [20]}
+elif model_name == 'knn':
+    level0 = KerasNN(nb_epoch=16)
+    param_grid = {'nb_epoch': [8,16,32]}
 
-
-model = GridSearchCV(estimator=level0, param_grid=param_grid, n_jobs=-1, cv=2, verbose=20, scoring=RMSE)
+model = GridSearchCV(estimator=level0, param_grid=param_grid, n_jobs=1, cv=2, verbose=20, scoring=RMSE)
 
 model.fit(X_train, y_train)
 
@@ -69,7 +73,7 @@ print(model.best_score_)
 
 y_pred = model.predict(X_test)
 
-# y_pred = y_pred*2+1
+y_pred = y_pred*2+1
 
 for i in range(len(y_pred)):
     if y_pred[i] < 1.0:

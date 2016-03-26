@@ -1,5 +1,5 @@
 import enchant
-from local_paths import *
+from configs import *
 
 __author__ = 'mudit'
 

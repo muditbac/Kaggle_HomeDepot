@@ -63,6 +63,7 @@ import time
 
 import numpy as np
 import pandas as pd
+from SimpleNN import KerasNN
 
 np.random.seed(2016)
 
@@ -71,9 +72,10 @@ from sklearn.linear_model import LinearRegression, BayesianRidge
 from sklearn import metrics
 from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor, GradientBoostingRegressor
 from sklearn.utils import shuffle
-from local_paths import INPUT_PATH
+from configs import *
 import xgboost as xgb
-
+import pickle as pkl
+import os
 
 def run(X, Y, X_test=None):
     # The DEV SET will be used for all training and validation purposes
@@ -82,9 +84,9 @@ def run(X, Y, X_test=None):
     Y = (Y - 1) / 2
 
     if X_test is None:
-        dev_cutoff = int(len(Y) * 2.5 / 5)
+        dev_cutoff = int(len(Y) * TEST_CUTOFF)
 
-        # X, Y = shuffle(X, Y)
+        X, Y = shuffle(X, Y)
 
         X_dev = X[:dev_cutoff]
         Y_dev = Y[:dev_cutoff]
@@ -95,20 +97,20 @@ def run(X, Y, X_test=None):
         X_dev = X
         Y_dev = Y
 
-    n_trees = 5  # Higher is better
-    n_folds = 5  # Higher is better
+    n_folds = configs['n_folds']  # Higher is better
 
     # Our level 0 classifiers
     clfs = [
+        # ('KerasSimpleNN',KerasNN(nb_epoch=8)),
         ('BayesianRidge', BayesianRidge(alpha_1=1e-6, alpha_2=1e-6, verbose=20)),
-        ('LinearRegression', LinearRegression(n_jobs=-1)),
-        ('RandomForestRegressor', RandomForestRegressor(n_estimators=n_trees, n_jobs=-1, verbose=20)),
-        ('ExtraTreesRegressor', ExtraTreesRegressor(n_estimators=n_trees * 2, n_jobs=-1, verbose=20)),
-        ('GradientBoostingRegressor', GradientBoostingRegressor(n_estimators=n_trees, verbose=20)),
+        ('LinearRegression', LinearRegression(n_jobs=NJOBS)),
+        ('RandomForestRegressor', RandomForestRegressor(n_estimators=mConfig['rfr_n_trees'], n_jobs=NJOBS, verbose=20)),
+        ('ExtraTreesRegressor', ExtraTreesRegressor(n_estimators=mConfig['etr_n_trees'], n_jobs=NJOBS, verbose=20)),
+        ('GradientBoostingRegressor', GradientBoostingRegressor(n_estimators=mConfig['gbr_n_trees'], verbose=20)),
         ('XGBLinear', xgb.XGBRegressor(learning_rate=0.05,
                                        silent=False,
                                        objective="reg:linear",
-                                       nthread=-1,
+                                       nthread=NJOBS,
                                        gamma=0.5,
                                        min_child_weight=5,
                                        max_delta_step=1,
@@ -121,13 +123,13 @@ def run(X, Y, X_test=None):
                                        base_score=0.5,
                                        seed=0,
                                        missing=None,
-                                       n_estimators=n_trees * 2,
+                                       n_estimators= mConfig['xgb_n_trees:linear'],
                                        max_depth=25
                                        )),
         ('XGBLogistic', xgb.XGBRegressor(learning_rate=0.05,
                                          silent=False,
                                          objective="reg:logistic",
-                                         nthread=-1,
+                                         nthread=NJOBS,
                                          gamma=0.5,
                                          min_child_weight=5,
                                          max_delta_step=1,
@@ -140,7 +142,7 @@ def run(X, Y, X_test=None):
                                          base_score=0.5,
                                          seed=0,
                                          missing=None,
-                                         n_estimators=n_trees * 2,
+                                         n_estimators=mConfig['xgb_b_trees:logistic'],
                                          max_depth=25
                                          ))
     ]
@@ -158,33 +160,38 @@ def run(X, Y, X_test=None):
 
     # For each classifier, we train the number of fold times (=len(skf))
     for j, (clf_name, clf) in enumerate(clfs):
-        print('Training classifier [%s %s]' % (j, clf_name))
         blend_test_j = np.zeros((X_test.shape[0], len(
             skf)))  # Number of testing data x Number of folds , we will take the mean of the predictions later
-        for i, (train_index, cv_index) in enumerate(skf):
-            print('Fold [%s]' % (i))
+        if os.path.isfile('%s%s%s' % (FOLD_PATH, clf_name, 'Train.npy')) and os.path.isfile('%s%s%s' % (FOLD_PATH, clf_name, 'Test.npy')):
+            print('Loading classifier [%s %s]' % (j, clf_name))
+            blend_train[:, j] = np.load(FOLD_PATH + clf_name + 'Train.npy')
+            blend_test[:, j] = np.load(FOLD_PATH + clf_name + 'Test.npy')
+        else:
+            print('Training classifier [%s %s]' % (j, clf_name))
+            for i, (train_index, cv_index) in enumerate(skf):
+                print('Fold [%s]' % (i))
 
-            # This is the training and validation set
-            X_train = X_dev[train_index]
-            Y_train = Y_dev[train_index]
-            X_cv = X_dev[cv_index]
-            Y_cv = Y_dev[cv_index]
+                # This is the training and validation set
+                X_train = X_dev[train_index]
+                Y_train = Y_dev[train_index]
+                X_cv = X_dev[cv_index]
+                Y_cv = Y_dev[cv_index]
 
-            clf.fit(X_train, Y_train)
+                clf.fit(X_train, Y_train)
 
-            # This output will be the basis for our blended classifier to train against,
-            # which is also the output of our classifiers
-            blend_train[cv_index, j] = clf.predict(X_cv)
-            blend_test_j[:, i] = clf.predict(X_test)
-        # Take the mean of the predictions of the cross validation set
-        np.concatenate((X_dev, Y_dev.reshape((len(X_dev), 1)), blend_train[:, j].reshape((len(X_dev), 1))),
-                       axis=1).dump("pickle/" + clf_name + 'Train.numpy')
-        blend_test[:, j] = blend_test_j.mean(1)
-
+                # This output will be the basis for our blended classifier to train against,
+                # which is also the output of our classifiers
+                blend_train[cv_index, j] = clf.predict(X_cv)
+                blend_test_j[:, i] = clf.predict(X_test)
+            # Take the mean of the predictions of the cross validation set
+            blend_test[:, j] = blend_test_j.mean(1)
+            if not DEBUG or 1:
+                blend_train[:, j].dump(FOLD_PATH + clf_name + 'Train.npy')
+                blend_test[:, j].dump(FOLD_PATH + clf_name + 'Test.npy')
     print('Y_dev.shape = %s' % Y_dev.shape)
 
     # Start blending!
-    bclf = LinearRegression(n_jobs=-1)
+    bclf = LinearRegression(n_jobs=NJOBS)
 
     # score=cross_val_score(bclf, verbose=20, cv=2, X=blend_train, y=Y_dev)
     bclf.fit(blend_train, Y_dev)
@@ -217,6 +224,6 @@ if __name__ == '__main__':
     y_train = np.load(INPUT_PATH + 'y_train.numpy')
     id_test = np.load(INPUT_PATH + 'id_test.numpy')
 
-    Y_test = run(X_train, y_train)
-    # pd.DataFrame({"id": id_test, "relevance": Y_test}).to_csv('submission/submission_stacked_%s.csv' % time.time(),
-    #                                                           index=False)
+    Y_test = run(X_train, y_train, X_test)
+    pd.DataFrame({"id": id_test, "relevance": Y_test}).to_csv('submission/submission_stacked_%s.csv' % time.time(),
+                                                              index=False)

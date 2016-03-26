@@ -1,5 +1,5 @@
 import pandas as pd
-from local_paths import *
+from configs import *
 
 # Native implementation using csv library
 # import csv
@@ -12,8 +12,8 @@ from local_paths import *
 # 	return data
 
 
-train = pd.read_csv(INPUT_PATH + "train.csv", encoding="ISO-8859-1")[:1000]
-test = pd.read_csv(INPUT_PATH + "test.csv", encoding="ISO-8859-1")[:1000]
-attributes = pd.read_csv(INPUT_PATH + "attributes.csv", encoding="ISO-8859-1")[:50000]
-descriptions = pd.read_csv(INPUT_PATH + "product_descriptions.csv", encoding="ISO-8859-1")[:1000]
+train = pd.read_csv(INPUT_PATH + "train.csv", encoding="ISO-8859-1")
+test = pd.read_csv(INPUT_PATH + "test.csv", encoding="ISO-8859-1")
+attributes = pd.read_csv(INPUT_PATH + "attributes.csv", encoding="ISO-8859-1")
+descriptions = pd.read_csv(INPUT_PATH + "product_descriptions.csv", encoding="ISO-8859-1")
 

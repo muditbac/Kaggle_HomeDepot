@@ -1,4 +1,4 @@
-from local_paths import INPUT_PATH
+from configs import INPUT_PATH
 
 __author__ = 'mudit'
 

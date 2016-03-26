@@ -10,7 +10,7 @@ from keras.layers import Dense, MaxoutDense, Embedding, Flatten
 from keras.models import Graph
 from keras.objectives import *
 import logging
-from local_paths import *
+from configs import *
 import numpy as np
 from keras.optimizers import *
 import pickle

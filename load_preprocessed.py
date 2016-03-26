@@ -1,6 +1,6 @@
 __author__ = 'mudit'
 
-from local_paths import *
+from configs import *
 
 import pandas as pd
 

@@ -1,11 +1,11 @@
-from local_paths import INPUT_PATH
-
-__author__ = 'mudit'
-
-# XGB
+import random
+import numpy as np
 import time
 
-start_time = time.time()
+np.random.seed(2016)
+random.seed(2016)
+
+from configs import INPUT_PATH
 
 import pandas as pd
 from sklearn import pipeline  # model_selection
@@ -18,10 +18,10 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import mean_squared_error, make_scorer
 from nltk.stem.porter import *
 
-stemmer = PorterStemmer()
-import random
+__author__ = 'mudit'
+start_time = time.time()
 
-random.seed(2016)
+stemmer = PorterStemmer()
 import xgboost as xgb
 
 
