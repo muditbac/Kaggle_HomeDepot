@@ -70,7 +70,7 @@ def ngram_match(query, string):
     return similar / float(total)
 
 
-df_all = df_all.fillna('')
+df_all = df_all.fillna(' ')
 
 # Extracting common features
 df_all['len_of_query'] = df_all['search_term'].map(lambda x: len(x.split())).astype(np.int64)
@@ -112,7 +112,6 @@ df_all['search_term_feature'] = df_all['search_term'].map(lambda x: len(x))
 
 print('- Common Features Extracted')
 
-df_all = df_all.fillna('')
 df_train = df_all[:len_train]
 df_test = df_all[len_train:]
 
@@ -159,19 +158,20 @@ X_train.dump(INPUT_PATH + 'X_train.numpy')
 X_test.dump(INPUT_PATH + 'X_test.numpy')
 y_train.dump(INPUT_PATH + 'y_train.numpy')
 id_test.values.dump(INPUT_PATH + 'id_test.numpy')
+
 # Implementing Doc2Vec::Gensim
-print("- Extracting Doc2Vec Features")
+# print("- Extracting Doc2Vec Features")
 
-def array_to_document(sources):
-    sentences = []
-    for id, source in enumerate(sources):
-        sentences.append(TaggedDocument(source.split(), ['doc_' + str(id)]))
-    return sentences
+# def array_to_document(sources):
+#     sentences = []
+#     for id, source in enumerate(sources):
+#         sentences.append(TaggedDocument(source.split(), ['doc_' + str(id)]))
+#     return sentences
 
-print('\t- Preparing data')
+# print('\t- Preparing data')
 
-product_info = (df_all['search_term'] + " " + df_all['product_title'] + " " + df_all['product_description']).astype(str)
-product_info = array_to_document(product_info)
+# product_info = (df_all['search_term'] + " " + df_all['product_title'] + " " + df_all['product_description']).astype(str)
+# product_info = array_to_document(product_info)
 #
 # model = Doc2Vec(size=100, window=8, min_count=5, workers=384, alpha=0.025, min_alpha=0.025)
 # model.build_vocab(product_info)
@@ -185,75 +185,12 @@ product_info = array_to_document(product_info)
 # print('\t- Saving Doc2Vec model')
 # model.save(INPUT_PATH + 'doc2vec')
 
-model = Doc2Vec.load(INPUT_PATH + 'doc2vec')
+# model = Doc2Vec.load(INPUT_PATH + 'doc2vec')
 
-print('\t- Loaded Doc2Vec model')
+# print('\t- Loaded Doc2Vec model')
 
-weights = [model.docvecs['doc_' + str(id)] for id in range(len(product_info))]
-weights = pd.DataFrame(weights)
-weights.columns = weights.columns.to_series().map(lambda x: 'feature_' + str(x))
+# weights = [model.docvecs['doc_' + str(id)] for id in range(len(product_info))]
+# weights = pd.DataFrame(weights)
+# weights.columns = weights.columns.to_series().map(lambda x: 'feature_' + str(x))
 
-df_all = pd.concat([df_all, weights], axis=1)
-
-
-# -----------------------------------------------------------------------------------
-# Random Forest Regressor
-def fmean_squared_error(ground_truth, predictions):
-    fmean_squared_error_ = mean_squared_error(ground_truth, predictions) ** 0.5
-    return fmean_squared_error_
-
-
-RMSE = make_scorer(fmean_squared_error, greater_is_better=False)
-
-feature_cols = ['feature_' + str(x) for x in range(100)]
-
-
-
-
-df_all['search_and_prod_info'] = (df_all['search_term'] + " " + df_all['product_title'] + " " + df_all[
-    'product_description'])  # .map(iso_encode).astype(str)
-
-df_train = df_all[:len_train]
-df_test = df_all[len_train:]
-
-rfr = RandomForestRegressor(n_estimators=50, n_jobs=-1, random_state=2016, verbose=1)
-tfidf = TfidfVectorizer(ngram_range=(1, 1), stop_words='english', encoding='ISO-8859-1')
-tsvd = TruncatedSVD(n_components=10, random_state=2016)
-tnmf = NMF(n_components=10, random_state=2016)
-tpca = PCA(n_components=10)
-
-clf = pipeline.Pipeline([
-    ('union', FeatureUnion(
-        transformer_list=[
-            ('cst',  cust_regression_vals()),
-            ('txt1', pipeline.Pipeline([('s1', cust_txt_col(key='search_term')), ('tfidf1', tfidf), ('tsvd1', tsvd)])),
-            ('txt2',
-             pipeline.Pipeline([('s2', cust_txt_col(key='search_and_prod_info')), ('tfidf2', tfidf), ('tsvd2', tsvd)])),
-            ('txt3',
-             pipeline.Pipeline([('s3', cust_txt_col(key='search_and_prod_info')), ('tfidf3', tfidf), ('tnmf', tnmf)])),
-            ('txt4', pipeline.Pipeline([('s4', cust_txt_col(key='brand')), ('tfidf4', tfidf), ('tsvd4', tsvd)]))
-        ],
-        transformer_weights={
-            'cst': 1.0,
-            'txt1': 0.5,
-            'txt2': 0.75,
-            'txt3': 0.75,
-            'txt4': 0.5
-        },
-        n_jobs = -1
-    )),
-    ('rfr', rfr)])
-
-param_grid = {'rfr__max_features': [25], 'rfr__max_depth': [25]}
-model = GridSearchCV(estimator=clf, param_grid=param_grid, n_jobs=-1, cv=2, verbose=20, scoring=RMSE)
-model.fit(df_train, df_train['relevance'].values)
-
-y_pred = model.predict(df_test)
-
-for i in range(len(y_pred)):
-    if y_pred[i] < 1:
-        y_pred[i] = 1
-    elif y_pred[i] > 3:
-        y_pred[i] = 3
-
-pd.DataFrame({"id": df_test['id'].values, "relevance": y_pred}).to_csv('submission_rfr_spell_02.csv', index=False)
+# df_all = pd.concat([df_all, weights], axis=1)

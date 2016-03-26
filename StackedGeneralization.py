@@ -84,17 +84,18 @@ def run(X, Y, X_test=None):
     if X_test is None:
         dev_cutoff = int(len(Y) * 2.5 / 5)
 
-        X, Y = shuffle(X, Y)
+        # X, Y = shuffle(X, Y)
 
         X_dev = X[:dev_cutoff]
         Y_dev = Y[:dev_cutoff]
         X_test = X[dev_cutoff:]
         Y_test = Y[dev_cutoff:]
     else:
+        X, Y = shuffle(X, Y)
         X_dev = X
         Y_dev = Y
 
-    n_trees = 500  # Higher is better
+    n_trees = 5  # Higher is better
     n_folds = 5  # Higher is better
 
     # Our level 0 classifiers
@@ -216,6 +217,6 @@ if __name__ == '__main__':
     y_train = np.load(INPUT_PATH + 'y_train.numpy')
     id_test = np.load(INPUT_PATH + 'id_test.numpy')
 
-    Y_test = run(X_train, y_train, X_test)
-    pd.DataFrame({"id": id_test, "relevance": Y_test}).to_csv('submission/submission_stacked_%s.csv' % time.time(),
-                                                              index=False)
+    Y_test = run(X_train, y_train)
+    # pd.DataFrame({"id": id_test, "relevance": Y_test}).to_csv('submission/submission_stacked_%s.csv' % time.time(),
+    #                                                           index=False)
