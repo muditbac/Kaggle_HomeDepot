@@ -77,7 +77,9 @@ from configs import *
 import xgboost as xgb
 import pickle as pkl
 import os
-from scipy.stats.mstats import gmean,hmean
+from scipy.stats.mstats import gmean, hmean
+
+
 def run(X, Y, X_test=None):
     # The DEV SET will be used for all training and validation purposes
     # The TEST SET will never be used for training, it is the unseen set.
@@ -108,7 +110,9 @@ def run(X, Y, X_test=None):
 
         ('LinearRegression', LinearRegression(n_jobs=NJOBS)),
         ('RandomForestRegressor', RandomForestRegressor(n_estimators=mConfig['rfr_n_trees'], n_jobs=NJOBS, verbose=20)),
-        ('ExtraTreesRegressor', ExtraTreesRegressor(n_estimators=mConfig['etr_n_trees'], n_jobs=NJOBS, verbose=20, max_features=99, max_depth=7 )),
+        ('ExtraTreesRegressor',
+         ExtraTreesRegressor(n_estimators=mConfig['etr_n_trees'], n_jobs=NJOBS, verbose=20, max_features=99,
+                             max_depth=7)),
         ('DecisionTreeRegressor', DecisionTreeRegressor(max_depth=6, max_features=99)),
         ('GradientBoostingRegressor', GradientBoostingRegressor(n_estimators=mConfig['gbr_n_trees'],
                                                                 max_depth=9,
@@ -132,7 +136,7 @@ def run(X, Y, X_test=None):
                                        base_score=0.5,
                                        seed=0,
                                        missing=None,
-                                       n_estimators= mConfig['xgb_n_trees:linear'],
+                                       n_estimators=mConfig['xgb_n_trees:linear'],
                                        max_depth=7
                                        )),
         ('XGBLogistic', xgb.XGBRegressor(learning_rate=0.075,
@@ -171,7 +175,8 @@ def run(X, Y, X_test=None):
     for j, (clf_name, clf) in enumerate(clfs):
         blend_test_j = np.zeros((X_test.shape[0], len(
             skf)))  # Number of testing data x Number of folds , we will take the mean of the predictions later
-        if os.path.isfile('%s%s%s' % (FOLD_PATH, clf_name, 'Train.npy')) and os.path.isfile('%s%s%s' % (FOLD_PATH, clf_name, 'Test.npy')):
+        if os.path.isfile('%s%s%s' % (FOLD_PATH, clf_name, 'Train.npy')) and os.path.isfile(
+                        '%s%s%s' % (FOLD_PATH, clf_name, 'Test.npy')):
             print('Loading classifier [%s %s]' % (j, clf_name))
             blend_train[:, j] = np.load(FOLD_PATH + clf_name + 'Train.npy')
             blend_test[:, j] = np.load(FOLD_PATH + clf_name + 'Test.npy')
@@ -199,6 +204,11 @@ def run(X, Y, X_test=None):
                 blend_test[:, j].dump(FOLD_PATH + clf_name + 'Test.npy')
     print('Y_dev.shape = %s' % Y_dev.shape)
 
+    # Correlation Matrix
+    print('\n---------- Correlation Matrix ----------')
+    print(np.around(np.corrcoef(np.transpose(blend_train)),3))
+
+
     # Start blending!
     bclf = LinearRegression(n_jobs=NJOBS)
 
@@ -217,22 +227,24 @@ def run(X, Y, X_test=None):
             Y_test_predict[i] = 1
 
     if 'Y_test' in locals():
-        print('---------- Test Accuracy ----------')
+        print('\n---------- Test Accuracy ----------')
         for i, (clf_name, clf) in enumerate(clfs):
             score = metrics.mean_squared_error(blend_test[:, i] * 2 + 1, Y_test * 2 + 1)
             print('%s Accuracy = %s' % (clf_name, score ** 0.5))
         score = metrics.mean_squared_error(Y_test * 2 + 1, Y_test_predict * 2 + 1)
         print('Accuracy = %s' % (score ** 0.5))
-    print('---------- Cross Validation Accuracy ----------')
+    print('\n---------- Cross Validation Accuracy ----------')
     for i, (clf_name, clf) in enumerate(clfs):
         score = metrics.mean_squared_error(blend_train[:, i] * 2 + 1, Y * 2 + 1)
         print('%s Accuracy = %s' % (clf_name, score ** 0.5))
     print('Weights = %s' % str(bclf.coef_))
     return Y_test_predict * 2 + 1
 
+
 def run_tests(X_train, y_train):
     pass
 
+# TODO Un-tune individual model
 if __name__ == '__main__':
     X_train = np.load(INPUT_PATH + 'X_train.numpy')
     X_test = np.load(INPUT_PATH + 'X_test.numpy')

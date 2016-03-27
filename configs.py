@@ -3,7 +3,7 @@ INPUT_PATH = "../input/"
 OUTPUT_PATH = "../output/"
 
 configs = {
-    'n_folds': 5,
+    'n_folds': 4,
     'seed': 2016
 }
 
