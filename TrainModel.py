@@ -20,19 +20,25 @@ from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
 from utilities import change_to_int
 # random.seed(2016)
 
-model_name = 'knn'
+model_name = 'xtree'
 # Available options ['tree', 'rfr', 'xgb', 'xtree', 'gbr', 'knn']
 
 # Choosing parameters on subsets.
-X_train = np.load(INPUT_PATH + 'X_train.numpy')
+# X_train = np.load(INPUT_PATH + 'X_train.numpy')
 # X_test = np.load(INPUT_PATH + 'X_test.numpy')
-y_train = np.load(INPUT_PATH + 'y_train.numpy')
+# y_train = np.load(INPUT_PATH + 'y_train.numpy')
 # id_test = np.load(INPUT_PATH + 'id_test.numpy')
 
-y_train = (y_train - 1.0) / 2.0
+# y_train = (y_train - 1.0) / 2.0
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X_train, y_train, test_size=0.5, random_state=configs['seed'])
+# X_train, X_test, y_train, y_test = train_test_split(
+#     X_train, y_train, test_size=0.5, random_state=configs['seed'])
+
+# For Tuning Final Model
+X_train = np.load(FOLD_PATH + 'BlendTrain_X.npy')
+X_test = np.load(FOLD_PATH + 'BlendTest_X.npy')
+y_train = np.load(FOLD_PATH + 'BlendTrain_Y.npy')
+y_test = np.load(FOLD_PATH + 'BlendTest_Y.npy')
 
 if model_name == 'rfr':
     level0 = RandomForestRegressor(n_estimators=50, n_jobs=-1, random_state=2016, verbose=1)
@@ -42,7 +48,7 @@ if model_name == 'rfr':
                     }
 elif model_name == 'xgb':
     level0 = xgb.XGBRegressor(learning_rate=0.05,
-                              silent=False,
+                              silent=True,
                               objective="reg:linear",
                               nthread=-1,
                               gamma=0.5,
@@ -68,12 +74,12 @@ elif model_name == 'xgb':
     # {'max_depth': 7.0, 'learning+rate': 0.075000000000000011, 'gamma': 0.55000000000000004, 'colsample_bytree': 0.90000000000000002, 'n_estimators': 263.0, 'subsample': 0.65000000000000002} : 0.46..
 elif model_name == 'tree':
     level0 = DecisionTreeRegressor(random_state=2016)
-    h_param_grid = {'max_features': hp.quniform('max_features', 50, 100, 1),
+    h_param_grid = {#'max_features': hp.quniform('max_features', 50, 100, 1),
                     'max_depth': hp.quniform('max_depth', 1, 15, 1)}
     # {'max_features': 95.0, 'max_depth': 6.0} : 0.47...
 elif model_name == 'xtree':
     level0 = ExtraTreesRegressor(random_state=2016, n_jobs=-1)
-    h_param_grid = {'max_features': hp.quniform('max_features', 50, 100, 1),
+    h_param_grid = {# 'max_features': hp.quniform('max_features', 50, 100, 1),
                     'max_depth': hp.quniform('max_depth', 5, 7, 1),
                     'n_estimators': hp.quniform('n_estimators', 100, 1000, 1)}
     # {'max_depth': 7.0, 'n_estimators': 478.0, 'max_features': 99.0}
@@ -105,14 +111,22 @@ elif model_name == 'knn':
 
 # Hyperopt Implementatation
 def score(params):
-    # change_to_int(params, ['max_depth', 'n_estimators'])
+    change_to_int(params, ['max_depth', 'n_estimators'])
     # change_to_int(params, ['max_depth', 'max_features', 'n_estimators'])
+    # change_to_int(params, ['max_depth', 'max_features'])
     print('Parameters :')
     print(params)
     # params['max_depth'] = int(params['max_depth'])
     level0.set_params(**params)
     level0.fit(X_train, y_train)
     y_pred = level0.predict(X_test)
+
+    for i in range(len(y_test)):
+        if y_test[i] < 0:
+            y_test[i] = 0
+        elif y_test[i] > 1:
+            y_test[i] = 1
+
     score = mean_squared_error(y_test, y_pred)
     score = score ** 0.5
     score = score * 2

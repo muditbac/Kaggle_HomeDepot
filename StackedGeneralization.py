@@ -79,6 +79,7 @@ import pickle as pkl
 import os
 from scipy.stats.mstats import gmean, hmean
 
+np.set_printoptions(formatter={'float_kind': float_formatter})
 
 def run(X, Y, X_test=None):
     # The DEV SET will be used for all training and validation purposes
@@ -204,13 +205,38 @@ def run(X, Y, X_test=None):
                 blend_test[:, j].dump(FOLD_PATH + clf_name + 'Test.npy')
     print('Y_dev.shape = %s' % Y_dev.shape)
 
+    # Saving Model Data
+    blend_train.dump(FOLD_PATH + 'BlendTrain_X.npy')
+    Y_dev.dump(FOLD_PATH + 'BlendTrain_Y.npy')
+    blend_test.dump(FOLD_PATH + 'BlendTest_X.npy')
+    if 'Y_test' in locals(): Y_test.dump(FOLD_PATH + 'BlendTest_Y.npy')
+
     # Correlation Matrix
     print('\n---------- Correlation Matrix ----------')
-    print(np.around(np.corrcoef(np.transpose(blend_train)),3))
+    print(np.corrcoef(np.transpose(blend_train)))
 
 
     # Start blending!
     bclf = LinearRegression(n_jobs=NJOBS)
+    # bclf = xgb.XGBRegressor(learning_rate=0.075,
+    #                         silent=False,
+    #                         objective="reg:linear",
+    #                         nthread=NJOBS,
+    #                         gamma=0.55,
+    #                         min_child_weight=5,
+    #                         max_delta_step=1,
+    #                         subsample=0.65,
+    #                         colsample_bytree=0.9,
+    #                         colsample_bylevel=1,
+    #                         reg_alpha=0.5,
+    #                         reg_lambda=1,
+    #                         scale_pos_weight=1,
+    #                         base_score=0.5,
+    #                         seed=0,
+    #                         missing=None,
+    #                         n_estimators=100,
+    #                         max_depth=7
+    #                         )
 
     # score=cross_val_score(bclf, verbose=20, cv=2, X=blend_train, y=Y_dev)
     bclf.fit(blend_train, Y_dev)
@@ -235,7 +261,7 @@ def run(X, Y, X_test=None):
         print('Accuracy = %s' % (score ** 0.5))
     print('\n---------- Cross Validation Accuracy ----------')
     for i, (clf_name, clf) in enumerate(clfs):
-        score = metrics.mean_squared_error(blend_train[:, i] * 2 + 1, Y * 2 + 1)
+        score = metrics.mean_squared_error(blend_train[:, i] * 2 + 1, Y_dev * 2 + 1)
         print('%s Accuracy = %s' % (clf_name, score ** 0.5))
     print('Weights = %s' % str(bclf.coef_))
     return Y_test_predict * 2 + 1
@@ -251,6 +277,6 @@ if __name__ == '__main__':
     y_train = np.load(INPUT_PATH + 'y_train.numpy')
     id_test = np.load(INPUT_PATH + 'id_test.numpy')
 
-    Y_test = run(X_train, y_train, X_test)
-    pd.DataFrame({"id": id_test, "relevance": Y_test}).to_csv('submission/submission_stacked_%s.csv' % time.time(),
-                                                              index=False)
+    Y_test = run(X_train, y_train)
+    # pd.DataFrame({"id": id_test, "relevance": Y_test}).to_csv('submission/submission_stacked_%s.csv' % time.time(),
+    #                                                           index=False)

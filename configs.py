@@ -41,3 +41,5 @@ else:
         'xgb_b_trees:logistic': 263
     }
     NJOBS = -1
+
+float_formatter = lambda x: "%.3f" % x
