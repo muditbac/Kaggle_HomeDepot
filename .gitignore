@@ -1,0 +1,7 @@
+.idea/
+*.pyc
+submission
+.fuse_hidden*
+pickle
+processing
+debug_processing
