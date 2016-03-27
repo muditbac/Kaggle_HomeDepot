@@ -104,6 +104,8 @@ def run(X, Y, X_test=None):
     clfs = [
         # ('KerasSimpleNN',KerasNN(nb_epoch=800)),
         ('BayesianRidge', BayesianRidge(alpha_1=1e-6, alpha_2=1e-6, verbose=20)),
+        ('BayesianRidgeA0', BayesianRidge(alpha_1=1e0, alpha_2=1e-6, verbose=20)),
+
         ('LinearRegression', LinearRegression(n_jobs=NJOBS)),
         ('RandomForestRegressor', RandomForestRegressor(n_estimators=mConfig['rfr_n_trees'], n_jobs=NJOBS, verbose=20)),
         ('ExtraTreesRegressor', ExtraTreesRegressor(n_estimators=mConfig['etr_n_trees'], n_jobs=NJOBS, verbose=20, max_features=99, max_depth=7 )),

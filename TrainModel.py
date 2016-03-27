@@ -20,7 +20,7 @@ from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
 from utilities import change_to_int
 # random.seed(2016)
 
-model_name = 'gbr'
+model_name = 'knn'
 # Available options ['tree', 'rfr', 'xgb', 'xtree', 'gbr', 'knn']
 
 # Choosing parameters on subsets.
@@ -106,7 +106,7 @@ elif model_name == 'knn':
 # Hyperopt Implementatation
 def score(params):
     # change_to_int(params, ['max_depth', 'n_estimators'])
-    change_to_int(params, ['max_depth', 'max_features', 'n_estimators'])
+    # change_to_int(params, ['max_depth', 'max_features', 'n_estimators'])
     print('Parameters :')
     print(params)
     # params['max_depth'] = int(params['max_depth'])

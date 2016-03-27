@@ -12,7 +12,7 @@ stop = EarlyStopping(monitor='loss', patience=2, verbose=0, mode='auto')
 
 
 class KerasNN(BaseEstimator):
-    def __init__(self, nb_epoch=50, batch_size=64, d1=0.5, d2=0.5, lr=1, verbose=False):
+    def __init__(self, nb_epoch=50, batch_size=512, d1=0.5, d2=0.5, lr=1, verbose=False):
         self.nb_epoch = nb_epoch
         self.batch_size = batch_size
         self.verbose = verbose
@@ -30,10 +30,10 @@ class KerasNN(BaseEstimator):
         print(self.d1)
         print(self.d2)
 
-        self.model.add(Dense(64, input_dim=input_dim, W_regularizer=l2(self.d1)), )
+        self.model.add(Dense(500, input_dim=input_dim, W_regularizer=l2(self.d1)), )
         self.model.add(Activation('sigmoid'))
         # self.model.add(Dropout(self.d1))
-        self.model.add(Dense(64, W_regularizer=l2(self.d2)))
+        self.model.add(Dense(500, W_regularizer=l2(self.d2)))
         self.model.add(Activation('sigmoid'))
         # self.model.add(Dropout(self.d2))
         self.model.add(Dense(1))
@@ -47,4 +47,4 @@ class KerasNN(BaseEstimator):
                        show_accuracy=self.verbose, **kwargs)
 
     def predict(self, X):
-        return self.model.predict(X).reshape((X.shape[0]))
+        return self.model.predict_proba(X).reshape((X.shape[0]))

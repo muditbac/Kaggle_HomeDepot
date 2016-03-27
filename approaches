@@ -1,0 +1,9 @@
+1. Average of Word2Vec vectors with TF-IDF : this is one of the best approach which I will recommend. Just take the word vectors and multiply it with their TF-IDF scores. Just take the average and it will represent your sentence vector.
+
+2. Use http://norvig.com/spell-correct.html as spelling corrector. You feed it the data that you have (product descs, title, attributes?), which has to have been cleaned up to some extent (numbers, comma's, dashes, etc). Then it works through a set of probabilities that the work on its own is correct vs. the probability a typo was made. 
+
+
+
+2. https://www.kaggle.com/c/otto-group-product-classification-challenge/forums/t/14335/1st-place-winner-solution-gilberto-titericz-stanislav-semenov
+3. https://www.kaggle.com/c/otto-group-product-classification-challenge/forums/t/14295/41599-via-tsne-meta-bagging
+4. https://www.kaggle.com/forums/f/15/kaggle-forum/t/14469/tuning-doesn-t-matter-why-are-you-doing-it/
