@@ -111,6 +111,7 @@ elif model_name == 'knn':
 
 # Hyperopt Implementatation
 def score(params):
+    # TODO Issue resolved https://github.com/hyperopt/hyperopt/issues/253
     change_to_int(params, ['max_depth', 'n_estimators'])
     # change_to_int(params, ['max_depth', 'max_features', 'n_estimators'])
     # change_to_int(params, ['max_depth', 'max_features'])

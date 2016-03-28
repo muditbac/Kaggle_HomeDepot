@@ -63,13 +63,16 @@ import time
 
 import numpy as np
 import pandas as pd
+from sklearn.svm import SVR
 from sklearn.tree import DecisionTreeRegressor
+from SimpleNN import KerasNN
+from utilities import make_folder
 # from SimpleNN import KerasNN
 
 np.random.seed(2016)
 
 from sklearn.cross_validation import StratifiedKFold
-from sklearn.linear_model import LinearRegression, BayesianRidge
+from sklearn.linear_model import LinearRegression, BayesianRidge, ElasticNet, SGDRegressor
 from sklearn import metrics
 from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor, GradientBoostingRegressor
 from sklearn.utils import shuffle
@@ -80,6 +83,7 @@ import os
 from scipy.stats.mstats import gmean, hmean
 
 np.set_printoptions(formatter={'float_kind': float_formatter})
+
 
 def run(X, Y, X_test=None):
     # The DEV SET will be used for all training and validation purposes
@@ -105,24 +109,37 @@ def run(X, Y, X_test=None):
 
     # Our level 0 classifiers
     clfs = [
-        # ('KerasSimpleNN',KerasNN(nb_epoch=800)),
-        ('BayesianRidge', BayesianRidge(alpha_1=1e-6, alpha_2=1e-6, verbose=20)),
-        ('BayesianRidgeA0', BayesianRidge(alpha_1=1e0, alpha_2=1e-6, verbose=20)),
+        # ('KerasSimpleNN',KerasNN(nb_epoch=150, batch_size=100000)),
+        ('BayesianRidge', BayesianRidge(alpha_1=1e-6, alpha_2=1e-6, verbose=not configs['silent'])),
+        ('BayesianRidgeA0', BayesianRidge(alpha_1=1e0, alpha_2=1e-6, verbose=not configs['silent'])),
 
         ('LinearRegression', LinearRegression(n_jobs=NJOBS)),
-        ('RandomForestRegressor', RandomForestRegressor(n_estimators=mConfig['rfr_n_trees'], n_jobs=NJOBS, verbose=20)),
-        ('ExtraTreesRegressor',
-         ExtraTreesRegressor(n_estimators=mConfig['etr_n_trees'], n_jobs=NJOBS, verbose=20, max_features=99,
-                             max_depth=7)),
+        ('ElasticNetRegression', ElasticNet(alpha=0.2, l1_ratio=0.5)),
+        # ('ElasticNetRegressionAX', ElasticNet(alpha=0.1, l1_ratio=0.1)),
+        # ('ElasticNetRegressionAXB', ElasticNet(alpha=0.1, l1_ratio=0.9)),
+        # ('SGDRegressor', SGDRegressor()),
+        # ('SVRRegression', SVR(verbose=not configs['silent'])),
+        # ('RandomForestRegressor', RandomForestRegressor(n_estimators=mConfig['rfr_n_trees'], n_jobs=NJOBS, verbose=not configs['silent'])),
+        # ('ExtraTreesRegressor',
+        #  ExtraTreesRegressor(n_estimators=mConfig['etr_n_trees'], n_jobs=NJOBS, verbose=not configs['silent'], max_features=99,
+        #                      max_depth=7)),
         ('DecisionTreeRegressor', DecisionTreeRegressor(max_depth=6, max_features=99)),
-        ('GradientBoostingRegressor', GradientBoostingRegressor(n_estimators=mConfig['gbr_n_trees'],
-                                                                max_depth=9,
-                                                                learning_rate=0.025,
-                                                                max_features=85,
-                                                                subsample=0.85,
-                                                                verbose=20)),
+        ('DecisionTreeRegressor5', DecisionTreeRegressor(max_depth=5, max_features=99)),
+        ('DecisionTreeRegressor7', DecisionTreeRegressor(max_depth=7, max_features=99)),
+        ('DecisionTreeRegressor4', DecisionTreeRegressor(max_depth=4, max_features=99)),
+        ('DecisionTreeRegressor3', DecisionTreeRegressor(max_depth=3, max_features=99)),
+        ('DecisionTreeRegressor2', DecisionTreeRegressor(max_depth=2, max_features=99)),
+        ('DecisionTreeRegressor1', DecisionTreeRegressor(max_depth=1, max_features=99)),
+        # Highly Correlated with other models
+        # ('GradientBoostingRegressor', GradientBoostingRegressor(n_estimators=mConfig['gbr_n_trees'],
+        #                                                         max_depth=9,
+        #                                                         learning_rate=0.025,
+        #                                                         max_features=85,
+        #                                                         subsample=0.85,
+        #                                                         verbose=not configs['silent'])),
+        # TODO Try by changing other parameters
         ('XGBLinear', xgb.XGBRegressor(learning_rate=0.075,
-                                       silent=False,
+                                       silent=configs['silent'],
                                        objective="reg:linear",
                                        nthread=NJOBS,
                                        gamma=0.55,
@@ -141,7 +158,7 @@ def run(X, Y, X_test=None):
                                        max_depth=7
                                        )),
         ('XGBLogistic', xgb.XGBRegressor(learning_rate=0.075,
-                                         silent=False,
+                                         silent=configs['silent'],
                                          objective="reg:logistic",
                                          nthread=NJOBS,
                                          gamma=0.55,
@@ -215,7 +232,7 @@ def run(X, Y, X_test=None):
     print('\n---------- Correlation Matrix ----------')
     print(np.corrcoef(np.transpose(blend_train)))
 
-
+    # TODO Try ridge regression
     # Start blending!
     bclf = LinearRegression(n_jobs=NJOBS)
     # bclf = xgb.XGBRegressor(learning_rate=0.075,
@@ -270,13 +287,20 @@ def run(X, Y, X_test=None):
 def run_tests(X_train, y_train):
     pass
 
+
 # TODO Un-tune individual model
 if __name__ == '__main__':
-    X_train = np.load(INPUT_PATH + 'X_train2.numpy')
-    X_test = np.load(INPUT_PATH + 'X_test2.numpy')
-    y_train = np.load(INPUT_PATH + 'y_train2.numpy')
-    id_test = np.load(INPUT_PATH + 'id_test2.numpy')
+    dataset_name = 'svd50x3'
+    model_name = '4fold_stacked_100estimators'
+    FOLD_PATH = FOLD_PATH + model_name + '/'
 
-    Y_test = run(X_train, y_train)
-    # pd.DataFrame({"id": id_test, "relevance": Y_test}).to_csv('submission/submission_stacked_%s.csv' % time.time(),
-    #                                                           index=False)
+    make_folder(FOLD_PATH)
+
+    X_train = np.load('%s%s_train.npy' % (DATASET_PATH, dataset_name))
+    X_test = np.load('%s%s_test.npy' % (DATASET_PATH, dataset_name))
+    y_train = np.load('%sY_train.npy' % DATASET_PATH)
+    id_test = np.load('%sid_test.npy' % DATASET_PATH)
+
+    Y_test = run(X_train, y_train, X_test)
+    pd.DataFrame({"id": id_test, "relevance": Y_test}).to_csv('submission/submission_stacked_%s.csv' % time.time(),
+                                                              index=False)

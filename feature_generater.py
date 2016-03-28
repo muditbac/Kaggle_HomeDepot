@@ -21,6 +21,7 @@ import numpy as np
 from gensim.models import Doc2Vec
 from nltk.util import ngrams
 from generate_dataset import save_feature
+
 print('- Data and Modules Loaded')
 
 edit_ratio = lambda x, y: Levenshtein.ratio(x, y)
@@ -72,19 +73,11 @@ def ngram_match(query, string):
 
 df_all = df_all.fillna(' ')
 
-key_query = 'search_term'
-key_title = 'product_title'
-key_description = 'product_description'
-key_brand = 'brand'
-
-raw_features = [key_query, key_title, key_description, key_brand]
-
-
 # Extracting common features
 
 # Length Features
 for f in raw_features:
-    df_all['len_of_%s' % f] = df_all[f].map(lambda x:len(x.split())).astype(np.int64)
+    df_all['len_of_%s' % f] = df_all[f].map(lambda x: len(x.split())).astype(np.int64)
     save_feature(df_all['len_of_%s' % f], 'len_of_%s' % f)
 
 df_all['product_info'] = df_all['search_term'] + "\t" + df_all['product_title'] + "\t" + df_all['product_description']
@@ -132,7 +125,6 @@ for f in [key_title, key_description, key_brand]:
     df_all['ngram_match_%s' % f] = df_all.apply(lambda x: ngram_match(x[key_query], x[f]), 1)
     save_feature(df_all['ngram_match_%s' % f], 'ngram_match_%s' % f)
 
-
 df_brand = pd.unique(df_all.brand.ravel())
 d = {}
 i = 1
@@ -158,33 +150,35 @@ df_test.to_csv(INPUT_PATH + "df_test2.csv", index=False)
 tfidf = TfidfVectorizer(ngram_range=(1, 2), stop_words='english')
 tsvd = TruncatedSVD(n_components=50, random_state=2016)
 
-#
-# tfidf.fit(cust_txt_col(key='product_info').transform(df_all))
-#
-# tfidf.transform(cust_txt_col(key=key_query).transform(df_all))
+# Training with whole the corpus at once
+tfidf.fit(cust_txt_col(key='product_info').transform(df_all))
 
-pipe1 = pipeline.Pipeline([('s1', cust_txt_col(key=key_query)), ('tfidf1', tfidf), ('tsvd1', tsvd)])
-query_vector_tfidf_20 = pipe1.fit_transform(df_all)
-save_feature(query_vector_tfidf_20, 'tfidf_svd20_%s_vector' % key_query)
+sparse = tfidf.transform(cust_txt_col(key=key_query).transform(df_all))
+query_vector_tfidf_50 = tsvd.fit_transform(sparse)
+save_feature(query_vector_tfidf_50, 'tfidf_svd50_%s_vector' % key_query)
+
+sparse = tfidf.transform(cust_txt_col(key=key_title).transform(df_all))
+title_vector_tfidf_50 = tsvd.fit_transform(sparse)
+save_feature(title_vector_tfidf_50, 'tfidf_svd50_%s_vector' % key_title)
+
+sparse = tfidf.transform(cust_txt_col(key=key_description).transform(df_all))
+description_vector_tfidf_50 = tsvd.fit_transform(sparse)
+save_feature(description_vector_tfidf_50, 'tfidf_svd50_%s_vector' % key_description)
 
 tsvd = TruncatedSVD(n_components=50, random_state=2016)
 pipe2 = pipeline.Pipeline([('s2', cust_txt_col(key=key_title)), ('tfidf2', tfidf), ('tsvd2', tsvd)])
 title_vector_tfidf_50 = pipe2.fit_transform(df_all)
 save_feature(title_vector_tfidf_50, 'tfidf_svd50_%s_vector' % key_title)
 
-pipe3 = pipeline.Pipeline([('s3', cust_txt_col(key=key_description)), ('tfidf3', tfidf), ('tsvd3', tsvd)])
-description_vector_tfidf_50 = pipe3.fit_transform(df_all)
-save_feature(description_vector_tfidf_50, 'tfidf_svd50_%s_vector' % key_description)
-
 id_test = df_test['id']
 y_train = df_train['relevance'].values
 X_train = df_train[:].fillna(0)
 X_test = df_test[:].fillna(0)
 
-X_train.dump(INPUT_PATH + 'X_train2.numpy')
-X_test.dump(INPUT_PATH + 'X_test2.numpy')
-y_train.dump(INPUT_PATH + 'y_train2.numpy')
-id_test.values.dump(INPUT_PATH + 'id_test2.numpy')
+# X_train.dump(DATASET_PATH + 'X_train2/.numpy')
+# X_test.dump(INPUT_PATH + 'X_test2.numpy')
+y_train.dump(DATASET_PATH + 'Y_train.npy')
+id_test.values.dump(DATASET_PATH + 'id_test.npy')
 
 # Implementing Doc2Vec::Gensim
 # print("- Extracting Doc2Vec Features")
