@@ -20,7 +20,7 @@ from load_preprocessed import *
 import numpy as np
 from gensim.models import Doc2Vec
 from nltk.util import ngrams
-
+from generate_dataset import save_feature
 print('- Data and Modules Loaded')
 
 edit_ratio = lambda x, y: Levenshtein.ratio(x, y)
@@ -72,34 +72,66 @@ def ngram_match(query, string):
 
 df_all = df_all.fillna(' ')
 
+key_query = 'search_term'
+key_title = 'product_title'
+key_description = 'product_description'
+key_brand = 'brand'
+
+raw_features = [key_query, key_title, key_description, key_brand]
+
+
 # Extracting common features
-df_all['len_of_query'] = df_all['search_term'].map(lambda x: len(x.split())).astype(np.int64)
-df_all['len_of_title'] = df_all['product_title'].map(lambda x: len(x.split())).astype(np.int64)
-df_all['len_of_description'] = df_all['product_description'].map(lambda x: len(x.split())).astype(np.int64)
-df_all['len_of_brand'] = df_all['brand'].map(lambda x: len(x.split())).astype(np.int64)
+
+# Length Features
+for f in raw_features:
+    df_all['len_of_%s' % f] = df_all[f].map(lambda x:len(x.split())).astype(np.int64)
+    save_feature(df_all['len_of_%s' % f], 'len_of_%s' % f)
 
 df_all['product_info'] = df_all['search_term'] + "\t" + df_all['product_title'] + "\t" + df_all['product_description']
 df_all['attr'] = df_all['search_term'] + "\t" + df_all['brand']
 
-df_all['query_in_title'] = df_all['product_info'].map(lambda x: str_whole_word(x.split('\t')[0], x.split('\t')[1], 0))
-df_all['query_in_description'] = df_all['product_info'].map(
-    lambda x: str_whole_word(x.split('\t')[0], x.split('\t')[2], 0))
+# df_all['query_in_title'] = df_all['product_info'].map(lambda x: str_whole_word(x.split('\t')[0], x.split('\t')[1], 0))
+# df_all['query_in_description'] = df_all['product_info'].map(
+#     lambda x: str_whole_word(x.split('\t')[0], x.split('\t')[2], 0))
+
+save_feature(df_all.apply(lambda x: str_whole_word(x[key_query], x[key_title], 0), 1), 'query_in_title')
+save_feature(df_all.apply(lambda x: str_whole_word(x[key_query], x[key_description], 0), 1), 'query_in_description')
+
+# Edit Distance and Ratio
+for f in [key_description, key_title]:
+    # Edit Distance
+    df_all['edit_dist_in_%s' % f] = df_all.apply(
+        lambda x: min_edit_dist(x[key_query], x[f]), 1)
+    save_feature(df_all['edit_dist_in_%s' % f], 'edit_dist_in_%s' % f)
+    # Edit Ratio
+    df_all['edit_ratio_in_%s' % f] = df_all['edit_dist_in_%s' % f] / df_all['len_of_%s' % f]
+    save_feature(df_all['edit_ratio_in_%s' % f], 'edit_ratio_in_%s' % f)
+
+# TODO Change this to new format
 df_all['edit_dist_in_info'] = df_all['product_info'].map(
     lambda x: min_edit_dist(x.split('\t')[0], x.split('\t')[1] + ' ' + x.split('\t')[2]))
-df_all['edit_ratio_in_info'] = df_all['edit_dist_in_info'] / df_all['len_of_query']
+df_all['edit_ratio_in_info'] = df_all['edit_dist_in_info'] / df_all['len_of_%s' % key_query]
 
-df_all['word_in_title'] = df_all['product_info'].map(lambda x: str_common_word(x.split('\t')[0], x.split('\t')[1]))
-df_all['edit_in_title'] = df_all['product_info'].map(lambda x: edit_ratio(x.split('\t')[0], x.split('\t')[1]))
-df_all['seq_edit_in_title'] = df_all['product_info'].map(lambda x: edit_seqratio(x.split('\t')[0], x.split('\t')[1]))
-df_all['word_in_description'] = df_all['product_info'].map(
-    lambda x: str_common_word(x.split('\t')[0], x.split('\t')[2]))
-df_all['word_in_brand'] = df_all['attr'].map(lambda x: str_common_word(x.split('\t')[0], x.split('\t')[1]))
+save_feature(df_all['edit_dist_in_info'], 'edit_dist_in_info')
+save_feature(df_all['edit_ratio_in_info'], 'edit_ratio_in_info')
 
-df_all['ratio_title'] = df_all['word_in_title'] / df_all['len_of_query']
-df_all['ratio_description'] = df_all['word_in_description'] / df_all['len_of_query']
-df_all['ratio_brand'] = df_all['word_in_brand'] / df_all['len_of_brand']
-df_all['ngram_match_title'] = df_all['product_info'].map(lambda x: ngram_match(x.split('\t')[0], x.split('\t')[1]))
-df_all['ngram_match_description'] = df_all['product_info'].map(lambda x: ngram_match(x.split('\t')[0], x.split('\t')[2]))
+# Common Words, and Edit Similarity
+for f in [key_title, key_description, key_brand]:
+    df_all['word_in_%s' % f] = df_all.apply(lambda x: str_common_word(x[key_query], x[f]), 1)
+    df_all['edit_in_%s' % f] = df_all.apply(lambda x: edit_ratio(x[key_query], x[f]), 1)
+    df_all['seq_edit_in_%s' % f] = df_all.apply(lambda x: edit_seqratio(x[key_query], x[f]), 1)
+    # Saving Features
+    save_feature(df_all['word_in_%s' % f], 'word_in_%s' % f)
+    save_feature(df_all['edit_in_%s' % f], 'edit_in_%s' % f)
+    save_feature(df_all['seq_edit_in_%s' % f], 'seq_edit_in_%s' % f)
+
+for f in [key_title, key_description, key_brand]:
+    save_feature(df_all['word_in_%s' % f] / df_all['len_of_%s' % key_query], 'word_ratio_in_%s' % f)
+
+for f in [key_title, key_description, key_brand]:
+    df_all['ngram_match_%s' % f] = df_all.apply(lambda x: ngram_match(x[key_query], x[f]), 1)
+    save_feature(df_all['ngram_match_%s' % f], 'ngram_match_%s' % f)
+
 
 df_brand = pd.unique(df_all.brand.ravel())
 d = {}
@@ -107,8 +139,12 @@ i = 1
 for s in df_brand:
     d[s] = i
     i += 1
+
 df_all['brand_feature'] = df_all['brand'].map(lambda x: d[x])
 df_all['search_term_feature'] = df_all['search_term'].map(lambda x: len(x))
+
+save_feature(df_all['brand_feature'], '%s_features' % key_brand)
+save_feature(df_all['search_term_feature'], '%s_features' % key_query)
 
 print('- Common Features Extracted')
 
@@ -118,46 +154,37 @@ df_test = df_all[len_train:]
 df_train.to_csv(INPUT_PATH + "df_train2.csv", index=False)
 df_test.to_csv(INPUT_PATH + "df_test2.csv", index=False)
 
-
-# TF-IDF and other features
+# Generating TF-IDF Vectors
 tfidf = TfidfVectorizer(ngram_range=(1, 2), stop_words='english')
-tsvd = TruncatedSVD(n_components=20, random_state=2016)
-tnmf = NMF(n_components=20, random_state=2016)
-fu = FeatureUnion(
-    transformer_list=[
-        ('cst', cust_regression_vals()),
-        ('txt1', pipeline.Pipeline([('s1', cust_txt_col(key='search_term')), ('tfidf1', tfidf), ('tsvd1', tsvd)])),
-        (
-            'txt2',
-            pipeline.Pipeline([('s2', cust_txt_col(key='product_title')), ('tfidf2', tfidf), ('tsvd2', tsvd)])),
-        ('txt3',
-         pipeline.Pipeline([('s3', cust_txt_col(key='product_description')), ('tfidf3', tfidf), ('tsvd3', tsvd)])),
-        ('txt4', pipeline.Pipeline([('s4', cust_txt_col(key='brand')), ('tfidf4', tfidf), ('tsvd4', tsvd)]))
-    ],
-    transformer_weights={
-        'cst': 1.0,
-        'txt1': 0.5,
-        'txt2': 0.25,
-        'txt3': 0.0,
-        'txt4': 0.5
-    },
-    # n_jobs = -1
-)
+tsvd = TruncatedSVD(n_components=50, random_state=2016)
+
+#
+# tfidf.fit(cust_txt_col(key='product_info').transform(df_all))
+#
+# tfidf.transform(cust_txt_col(key=key_query).transform(df_all))
+
+pipe1 = pipeline.Pipeline([('s1', cust_txt_col(key=key_query)), ('tfidf1', tfidf), ('tsvd1', tsvd)])
+query_vector_tfidf_20 = pipe1.fit_transform(df_all)
+save_feature(query_vector_tfidf_20, 'tfidf_svd20_%s_vector' % key_query)
+
+tsvd = TruncatedSVD(n_components=50, random_state=2016)
+pipe2 = pipeline.Pipeline([('s2', cust_txt_col(key=key_title)), ('tfidf2', tfidf), ('tsvd2', tsvd)])
+title_vector_tfidf_50 = pipe2.fit_transform(df_all)
+save_feature(title_vector_tfidf_50, 'tfidf_svd50_%s_vector' % key_title)
+
+pipe3 = pipeline.Pipeline([('s3', cust_txt_col(key=key_description)), ('tfidf3', tfidf), ('tsvd3', tsvd)])
+description_vector_tfidf_50 = pipe3.fit_transform(df_all)
+save_feature(description_vector_tfidf_50, 'tfidf_svd50_%s_vector' % key_description)
 
 id_test = df_test['id']
 y_train = df_train['relevance'].values
 X_train = df_train[:].fillna(0)
 X_test = df_test[:].fillna(0)
 
-
-fu.fit(pd.concat((X_train, X_test)))
-X_train = fu.transform(X_train)
-X_test = fu.transform(X_test)
-
-X_train.dump(INPUT_PATH + 'X_train.numpy')
-X_test.dump(INPUT_PATH + 'X_test.numpy')
-y_train.dump(INPUT_PATH + 'y_train.numpy')
-id_test.values.dump(INPUT_PATH + 'id_test.numpy')
+X_train.dump(INPUT_PATH + 'X_train2.numpy')
+X_test.dump(INPUT_PATH + 'X_test2.numpy')
+y_train.dump(INPUT_PATH + 'y_train2.numpy')
+id_test.values.dump(INPUT_PATH + 'id_test2.numpy')
 
 # Implementing Doc2Vec::Gensim
 # print("- Extracting Doc2Vec Features")

@@ -1,5 +1,6 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.metrics import mean_squared_error, make_scorer
+import os
 
 __author__ = 'mudit'
 
@@ -37,4 +38,27 @@ RMSE = make_scorer(fmean_squared_error, greater_is_better=False)
 def change_to_int(params, indexes):
     for index in indexes:
         params[index] = int(params[index])
-    # return params
+        # return params
+
+
+def make_folder(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+
+def identity(x):
+    return x
+
+
+class SimpleTransform(BaseEstimator):
+    def __init__(self, transformer=identity):
+        self.transformer = transformer
+
+    def fit(self, X, y=None):
+        return self
+
+    def fit_transform(self, X, y=None):
+        return self.transform(X)
+
+    def transform(self, X, y=None):
+        return self.transformer(X)

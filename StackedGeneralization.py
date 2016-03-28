@@ -272,10 +272,10 @@ def run_tests(X_train, y_train):
 
 # TODO Un-tune individual model
 if __name__ == '__main__':
-    X_train = np.load(INPUT_PATH + 'X_train.numpy')
-    X_test = np.load(INPUT_PATH + 'X_test.numpy')
-    y_train = np.load(INPUT_PATH + 'y_train.numpy')
-    id_test = np.load(INPUT_PATH + 'id_test.numpy')
+    X_train = np.load(INPUT_PATH + 'X_train2.numpy')
+    X_test = np.load(INPUT_PATH + 'X_test2.numpy')
+    y_train = np.load(INPUT_PATH + 'y_train2.numpy')
+    id_test = np.load(INPUT_PATH + 'id_test2.numpy')
 
     Y_test = run(X_train, y_train)
     # pd.DataFrame({"id": id_test, "relevance": Y_test}).to_csv('submission/submission_stacked_%s.csv' % time.time(),

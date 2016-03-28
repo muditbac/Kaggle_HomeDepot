@@ -2,6 +2,10 @@ INPUT_PATH = "../input/"
 
 OUTPUT_PATH = "../output/"
 
+FEATURES_PATH = "features/"
+
+DATASET_PATH = 'datasets/'
+
 configs = {
     'n_folds': 4,
     'seed': 2016
@@ -11,7 +15,7 @@ TRAIN_FILE = INPUT_PATH + 'train.csv'
 TEST_FILE = INPUT_PATH + 'test.csv'
 
 
-DEBUG = False
+DEBUG = True
 
 if DEBUG:
     PROCESS_PATH = 'debug_processing/'
@@ -23,8 +27,8 @@ if DEBUG:
         'rfr_n_trees': 10,
         'etr_n_trees': 10,
         'gbr_n_trees': 10,
-        'xgb_n_trees:linear': 263,
-        'xgb_b_trees:logistic': 263
+        'xgb_n_trees:linear': 10,
+        'xgb_b_trees:logistic': 10
     }
     NJOBS = -1
 else:
