@@ -63,24 +63,20 @@ import time
 
 import numpy as np
 import pandas as pd
-from sklearn.svm import SVR
 from sklearn.tree import DecisionTreeRegressor
-from SimpleNN import KerasNN
+
 from utilities import make_folder
 # from SimpleNN import KerasNN
 
 np.random.seed(2016)
 
 from sklearn.cross_validation import StratifiedKFold
-from sklearn.linear_model import LinearRegression, BayesianRidge, ElasticNet, SGDRegressor
+from sklearn.linear_model import LinearRegression, BayesianRidge, ElasticNet
 from sklearn import metrics
-from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor, GradientBoostingRegressor
 from sklearn.utils import shuffle
 from configs import *
 import xgboost as xgb
-import pickle as pkl
 import os
-from scipy.stats.mstats import gmean, hmean
 
 np.set_printoptions(formatter={'float_kind': float_formatter})
 
@@ -157,6 +153,25 @@ def run(X, Y, X_test=None):
                                        n_estimators=mConfig['xgb_n_trees:linear'],
                                        max_depth=7
                                        )),
+        ('XGBLinearB', xgb.XGBRegressor(learning_rate=0.075,
+                                        silent=configs['silent'],
+                                        objective="reg:linear",
+                                        nthread=NJOBS,
+                                        gamma=0.65,
+                                        min_child_weight=5,
+                                        max_delta_step=1,
+                                        subsample=0.55,
+                                        colsample_bytree=0.9,
+                                        colsample_bylevel=1,
+                                        reg_alpha=0.5,
+                                        reg_lambda=1,
+                                        scale_pos_weight=1,
+                                        base_score=0.5,
+                                        seed=0,
+                                        missing=None,
+                                        n_estimators=mConfig['xgb_n_trees:linear'],
+                                        max_depth=5
+                                        )),
         ('XGBLogistic', xgb.XGBRegressor(learning_rate=0.075,
                                          silent=configs['silent'],
                                          objective="reg:logistic",
@@ -175,7 +190,45 @@ def run(X, Y, X_test=None):
                                          missing=None,
                                          n_estimators=mConfig['xgb_b_trees:logistic'],
                                          max_depth=7
-                                         ))
+                                         )),
+        ('XGBLogisticA', xgb.XGBRegressor(learning_rate=0.075,
+                                          silent=configs['silent'],
+                                          objective="reg:logistic",
+                                          nthread=NJOBS,
+                                          gamma=0.55,
+                                          min_child_weight=5,
+                                          max_delta_step=1,
+                                          subsample=0.65,
+                                          colsample_bytree=0.9,
+                                          colsample_bylevel=1,
+                                          reg_alpha=0.5,
+                                          reg_lambda=1,
+                                          scale_pos_weight=1,
+                                          base_score=0.5,
+                                          seed=0,
+                                          missing=None,
+                                          n_estimators=mConfig['xgb_b_trees:logistic'],
+                                          max_depth=5
+                                          )),
+        ('XGBLogisticB', xgb.XGBRegressor(learning_rate=0.075,
+                                          silent=configs['silent'],
+                                          objective="reg:logistic",
+                                          nthread=NJOBS,
+                                          gamma=0.55,
+                                          min_child_weight=5,
+                                          max_delta_step=1,
+                                          subsample=0.65,
+                                          colsample_bytree=0.9,
+                                          colsample_bylevel=1,
+                                          reg_alpha=0.5,
+                                          reg_lambda=1,
+                                          scale_pos_weight=1,
+                                          base_score=0.5,
+                                          seed=0,
+                                          missing=None,
+                                          n_estimators=mConfig['xgb_b_trees:logistic'],
+                                          max_depth=3
+                                          )),
     ]
 
     # Ready for cross validation
@@ -290,8 +343,8 @@ def run_tests(X_train, y_train):
 
 # TODO Un-tune individual model
 if __name__ == '__main__':
-    dataset_name = 'svd50x3'
-    model_name = '4fold_stacked_100estimators'
+    dataset_name = 'svd50x3_dist'
+    model_name = '4fold_stacked_100estimators_dist_feats'
     FOLD_PATH = FOLD_PATH + model_name + '/'
 
     make_folder(FOLD_PATH)

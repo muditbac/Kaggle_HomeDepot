@@ -1,3 +1,4 @@
+from generate_dataset import save_feature
 import ngram
 
 __author__ = 'mudit'
@@ -108,6 +109,6 @@ def extract_basic_distance_feat(df):
                     obs_name = feat_names[j]
                     df["%s_of_%s_between_%s_%s"%(dist,gram,target_name,obs_name)] = \
                             list(df.apply(lambda x: compute_dist(x[gram+"_"+target_name], x[gram+"_"+obs_name], dist), axis=1))
-
+                    save_feature(df["%s_of_%s_between_%s_%s"%(dist,gram,target_name,obs_name)].values, "%s_of_%s_between_%s_%s"%(dist,gram,target_name,obs_name))
 
 extract_basic_distance_feat(df_all)
