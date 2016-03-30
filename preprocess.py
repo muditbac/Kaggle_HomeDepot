@@ -24,6 +24,7 @@ i = 0
 
 dict_spell = {}
 
+
 def load_dict(filename, sep='|'):
     with open(filename, 'r') as fin:
         for line in fin:
@@ -94,6 +95,7 @@ def string_preprocess(s, spell_check=False):
     #         if rchr in s:
     #             s = s.replace(rchr, replace[rep])
     return s
+
 
 load_dict('spelling.txt')
 print('- Processing started %s minutes' % round(((time.time() - start_time) / 60), 2))

@@ -59,25 +59,28 @@ Accuracy = 0.935483870968
 
 """
 
-import time
-
 import numpy as np
 import pandas as pd
+from sklearn.ensemble import ExtraTreesRegressor, RandomForestRegressor
+from sklearn.neighbors import KNeighborsRegressor
 from sklearn.tree import DecisionTreeRegressor
 
-from utilities import make_folder
 # from SimpleNN import KerasNN
 
 np.random.seed(2016)
 
 from sklearn.cross_validation import StratifiedKFold
-from sklearn.linear_model import LinearRegression, BayesianRidge, ElasticNet
+from sklearn.linear_model import LinearRegression, BayesianRidge, ElasticNet, Ridge, SGDRegressor
 from sklearn import metrics
 from sklearn.utils import shuffle
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.pipeline import make_pipeline
 from configs import *
 import xgboost as xgb
-import os
-
+from utilities import *
+# from pyfm import pylibfm
+import pickle as pkl
+import time
 np.set_printoptions(formatter={'float_kind': float_formatter})
 
 
@@ -87,17 +90,18 @@ def run(X, Y, X_test=None):
 
     Y = (Y - 1) / 2
 
-    if X_test is None:
-        dev_cutoff = int(len(Y) * TEST_CUTOFF)
+    # TODO: Same Fold Informations beacause the data is being save in random format whose index order is not save
+    if DEBUG:
+        # dev_cutoff = int(len(Y) * TEST_CUTOFF)
 
-        X, Y = shuffle(X, Y)
+        # X, Y = shuffle(X, Y)
+        split = pkl.load(open(FOLD_PATH + 'split.pkl', 'rb'))
 
-        X_dev = X[:dev_cutoff]
-        Y_dev = Y[:dev_cutoff]
-        X_test = X[dev_cutoff:]
-        Y_test = Y[dev_cutoff:]
+        X_dev = X[split[0]]
+        Y_dev = Y[split[0]]
+        X_test = X[split[1]]
+        Y_test = Y[split[1]]
     else:
-        X, Y = shuffle(X, Y)
         X_dev = X
         Y_dev = Y
 
@@ -106,19 +110,31 @@ def run(X, Y, X_test=None):
     # Our level 0 classifiers
     clfs = [
         # ('KerasSimpleNN',KerasNN(nb_epoch=150, batch_size=100000)),
+        # ('SimpleTransform', SimpleTransform()),
         ('BayesianRidge', BayesianRidge(alpha_1=1e-6, alpha_2=1e-6, verbose=not configs['silent'])),
         ('BayesianRidgeA0', BayesianRidge(alpha_1=1e0, alpha_2=1e-6, verbose=not configs['silent'])),
+        # ('FactorizationMachines', pylibfm.FM()),
+        # ('Ridge', Ridge(alpha=1e-7)),        ('ExtraTreesRegressor',
+
 
         ('LinearRegression', LinearRegression(n_jobs=NJOBS)),
         ('ElasticNetRegression', ElasticNet(alpha=0.2, l1_ratio=0.5)),
         # ('ElasticNetRegressionAX', ElasticNet(alpha=0.1, l1_ratio=0.1)),
         # ('ElasticNetRegressionAXB', ElasticNet(alpha=0.1, l1_ratio=0.9)),
-        # ('SGDRegressor', SGDRegressor()),
+        ('SGDRegressor', SGDRegressor()),
         # ('SVRRegression', SVR(verbose=not configs['silent'])),
-        # ('RandomForestRegressor', RandomForestRegressor(n_estimators=mConfig['rfr_n_trees'], n_jobs=NJOBS, verbose=not configs['silent'])),
-        # ('ExtraTreesRegressor',
-        #  ExtraTreesRegressor(n_estimators=mConfig['etr_n_trees'], n_jobs=NJOBS, verbose=not configs['silent'], max_features=99,
-        #                      max_depth=7)),
+        ('RandomForestRegressor', RandomForestRegressor(n_estimators=int(mConfig['rfr_n_trees'] / 5), n_jobs=NJOBS,
+                                                        verbose=not configs['silent'])),
+        ('ExtraTreesRegressor',
+         ExtraTreesRegressor(n_estimators=mConfig['etr_n_trees'], n_jobs=NJOBS, verbose=not configs['silent'],
+                             max_features=99,
+                             max_depth=7)),
+        # ('KNN', KNeighborsRegressor(n_jobs=NJOBS, n_neighbors=5)),
+        # ('KNN50', KNeighborsRegressor(n_jobs=NJOBS, n_neighbors=50)),
+        # ('KNN25', KNeighborsRegressor(n_jobs=NJOBS, n_neighbors=25)),
+        # ('KNN100', KNeighborsRegressor(n_jobs=NJOBS, n_neighbors=100)),
+        # ('KNN200', KNeighborsRegressor(n_jobs=NJOBS, n_neighbors=200)),
+        # ('KNN512', KNeighborsRegressor(n_jobs=NJOBS, n_neighbors=512)),
         ('DecisionTreeRegressor', DecisionTreeRegressor(max_depth=6, max_features=99)),
         ('DecisionTreeRegressor5', DecisionTreeRegressor(max_depth=5, max_features=99)),
         ('DecisionTreeRegressor7', DecisionTreeRegressor(max_depth=7, max_features=99)),
@@ -126,6 +142,9 @@ def run(X, Y, X_test=None):
         ('DecisionTreeRegressor3', DecisionTreeRegressor(max_depth=3, max_features=99)),
         ('DecisionTreeRegressor2', DecisionTreeRegressor(max_depth=2, max_features=99)),
         ('DecisionTreeRegressor1', DecisionTreeRegressor(max_depth=1, max_features=99)),
+        # ('DecisionTreeRegressor6-max', DecisionTreeRegressor(max_depth=6)),
+        # ('DecisionTreeRegressor1-50', DecisionTreeRegressor(max_depth=1, max_features=50)),
+        # ('DecisionTreeRegressor1-20', DecisionTreeRegressor(max_depth=1, max_features=20)),
         # Highly Correlated with other models
         # ('GradientBoostingRegressor', GradientBoostingRegressor(n_estimators=mConfig['gbr_n_trees'],
         #                                                         max_depth=9,
@@ -172,6 +191,25 @@ def run(X, Y, X_test=None):
                                         n_estimators=mConfig['xgb_n_trees:linear'],
                                         max_depth=5
                                         )),
+        ('XGBLinearBReg5A1', xgb.XGBRegressor(learning_rate=0.075,
+                                              silent=configs['silent'],
+                                              objective="reg:linear",
+                                              nthread=NJOBS,
+                                              gamma=0.65,
+                                              min_child_weight=5,
+                                              max_delta_step=1,
+                                              subsample=0.55,
+                                              colsample_bytree=0.9,
+                                              colsample_bylevel=1,
+                                              reg_alpha=1,
+                                              reg_lambda=5,
+                                              scale_pos_weight=1,
+                                              base_score=0.5,
+                                              seed=0,
+                                              missing=None,
+                                              n_estimators=mConfig['xgb_n_trees:linear'],
+                                              max_depth=5
+                                              )),
         ('XGBLogistic', xgb.XGBRegressor(learning_rate=0.075,
                                          silent=configs['silent'],
                                          objective="reg:logistic",
@@ -232,7 +270,11 @@ def run(X, Y, X_test=None):
     ]
 
     # Ready for cross validation
-    skf = list(StratifiedKFold(Y_dev, n_folds=n_folds, shuffle=True))
+    # skf = list(StratifiedKFold(Y_dev, n_folds=n_folds, shuffle=True))
+    if DEBUG:
+        skf = pkl.load(open(FOLD_PATH + 'split_folds.pkl', 'rb'))
+    else:
+        skf = pkl.load(open(FOLD_PATH + 'folds.pkl', 'rb'))
 
     # Pre-allocate the data
     blend_train = np.zeros((X_dev.shape[0], len(clfs)))  # Number of training data x Number of classifiers
@@ -246,11 +288,11 @@ def run(X, Y, X_test=None):
     for j, (clf_name, clf) in enumerate(clfs):
         blend_test_j = np.zeros((X_test.shape[0], len(
             skf)))  # Number of testing data x Number of folds , we will take the mean of the predictions later
-        if os.path.isfile('%s%s%s' % (FOLD_PATH, clf_name, 'Train.npy')) and os.path.isfile(
-                        '%s%s%s' % (FOLD_PATH, clf_name, 'Test.npy')):
+        if os.path.isfile('%s%s%s' % (FOLD_PATH_NEW, clf_name, 'Train.npy')) and os.path.isfile(
+                        '%s%s%s' % (FOLD_PATH_NEW, clf_name, 'Test.npy')):
             print('Loading classifier [%s %s]' % (j, clf_name))
-            blend_train[:, j] = np.load(FOLD_PATH + clf_name + 'Train.npy')
-            blend_test[:, j] = np.load(FOLD_PATH + clf_name + 'Test.npy')
+            blend_train[:, j] = np.load(FOLD_PATH_NEW + clf_name + 'Train.npy')
+            blend_test[:, j] = np.load(FOLD_PATH_NEW + clf_name + 'Test.npy')
         else:
             print('Training classifier [%s %s]' % (j, clf_name))
             for i, (train_index, cv_index) in enumerate(skf):
@@ -271,50 +313,33 @@ def run(X, Y, X_test=None):
             # Take the mean of the predictions of the cross validation set
             blend_test[:, j] = blend_test_j.mean(1)
             if not DEBUG or 1:
-                blend_train[:, j].dump(FOLD_PATH + clf_name + 'Train.npy')
-                blend_test[:, j].dump(FOLD_PATH + clf_name + 'Test.npy')
+                blend_train[:, j].dump(FOLD_PATH_NEW + clf_name + 'Train.npy')
+                blend_test[:, j].dump(FOLD_PATH_NEW + clf_name + 'Test.npy')
     print('Y_dev.shape = %s' % Y_dev.shape)
 
     # Saving Model Data
-    blend_train.dump(FOLD_PATH + 'BlendTrain_X.npy')
-    Y_dev.dump(FOLD_PATH + 'BlendTrain_Y.npy')
-    blend_test.dump(FOLD_PATH + 'BlendTest_X.npy')
-    if 'Y_test' in locals(): Y_test.dump(FOLD_PATH + 'BlendTest_Y.npy')
+    blend_train.dump(FOLD_PATH_NEW + 'BlendTrain_X.npy')
+    Y_dev.dump(FOLD_PATH_NEW + 'BlendTrain_Y.npy')
+    blend_test.dump(FOLD_PATH_NEW + 'BlendTest_X.npy')
+    if 'Y_test' in locals(): Y_test.dump(FOLD_PATH_NEW + 'BlendTest_Y.npy')
 
     # Correlation Matrix
     print('\n---------- Correlation Matrix ----------')
     print(np.corrcoef(np.transpose(blend_train)))
 
-    # TODO Try ridge regression
     # Start blending!
     bclf = LinearRegression(n_jobs=NJOBS)
-    # bclf = xgb.XGBRegressor(learning_rate=0.075,
-    #                         silent=False,
-    #                         objective="reg:linear",
-    #                         nthread=NJOBS,
-    #                         gamma=0.55,
-    #                         min_child_weight=5,
-    #                         max_delta_step=1,
-    #                         subsample=0.65,
-    #                         colsample_bytree=0.9,
-    #                         colsample_bylevel=1,
-    #                         reg_alpha=0.5,
-    #                         reg_lambda=1,
-    #                         scale_pos_weight=1,
-    #                         base_score=0.5,
-    #                         seed=0,
-    #                         missing=None,
-    #                         n_estimators=100,
-    #                         max_depth=7
-    #                         )
-
+    degree = 2
+    bclf = make_pipeline(PolynomialFeatures(degree, interaction_only=True), Ridge(alpha=0.1))
+    # bclf = Ridge()
     # score=cross_val_score(bclf, verbose=20, cv=2, X=blend_train, y=Y_dev)
+
     bclf.fit(blend_train, Y_dev)
 
     # Predict now
     Y_test_predict = bclf.predict(blend_test)
 
-    # Y_test_predict = 2*Y_test_predict+1
+    # Y_test_predict = np.round(Y_test_predict * 6.0)/ 6.0
 
     for i in range(len(Y_test_predict)):
         if Y_test_predict[i] < 0:
@@ -333,7 +358,7 @@ def run(X, Y, X_test=None):
     for i, (clf_name, clf) in enumerate(clfs):
         score = metrics.mean_squared_error(blend_train[:, i] * 2 + 1, Y_dev * 2 + 1)
         print('%s Accuracy = %s' % (clf_name, score ** 0.5))
-    print('Weights = %s' % str(bclf.coef_))
+    # print('Weights = %s' % str(bclf.coef_))
     return Y_test_predict * 2 + 1
 
 
@@ -344,16 +369,21 @@ def run_tests(X_train, y_train):
 # TODO Un-tune individual model
 if __name__ == '__main__':
     dataset_name = 'svd50x3_dist'
-    model_name = '4fold_stacked_100estimators_dist_feats'
-    FOLD_PATH = FOLD_PATH + model_name + '/'
+    model_name = '4fold_stacked_100estimators_re2'
+    if DEBUG:
+        model_name = 'test_' + model_name
+    FOLD_PATH_NEW = FOLD_PATH + model_name + '/'
 
-    make_folder(FOLD_PATH)
+    make_folder(FOLD_PATH_NEW)
 
     X_train = np.load('%s%s_train.npy' % (DATASET_PATH, dataset_name))
     X_test = np.load('%s%s_test.npy' % (DATASET_PATH, dataset_name))
     y_train = np.load('%sY_train.npy' % DATASET_PATH)
     id_test = np.load('%sid_test.npy' % DATASET_PATH)
 
+    # TODO Change the model_name inside this function if X_test is passed
     Y_test = run(X_train, y_train, X_test)
-    pd.DataFrame({"id": id_test, "relevance": Y_test}).to_csv('submission/submission_stacked_%s.csv' % time.time(),
-                                                              index=False)
+    if not DEBUG:
+        pd.DataFrame({"id": id_test, "relevance": Y_test}).to_csv('submission/submission_stacked_%s.csv' % time.time(),
+                                                                  index=False)
+    print(Y_test)

@@ -24,26 +24,24 @@ key_description = 'product_description'
 key_brand = 'brand'
 raw_features = [key_query, key_title, key_description, key_brand]
 
-DEBUG = False
+DEBUG = True
 
 if DEBUG:
-    PROCESS_PATH = 'debug_processing/'
+    PROCESS_PATH = 'processing/'
     FOLD_PATH = PROCESS_PATH + str(configs['n_folds'])+'folds/'
-    FOLDS_INFO = FOLD_PATH + 'folds.pkl'
     nFoldFilename = str(configs['n_folds']) + 'fold_config.pickle'
     TEST_CUTOFF = 0.20
     mConfig = {
-        'rfr_n_trees': 10,
-        'etr_n_trees': 10,
-        'gbr_n_trees': 10,
-        'xgb_n_trees:linear': 10,
-        'xgb_b_trees:logistic': 10
+        'rfr_n_trees': 100,
+        'etr_n_trees': 100,
+        'gbr_n_trees': 100,
+        'xgb_n_trees:linear': 263,
+        'xgb_b_trees:logistic': 263
     }
     NJOBS = -1
 else:
     PROCESS_PATH = 'processing/'
     FOLD_PATH = PROCESS_PATH + str(configs['n_folds'])+'folds/'
-    FOLDS_INFO = FOLD_PATH + 'folds.pkl'
     nFoldFilename = str(configs['n_folds']) + 'fold_config.pickle'
     TEST_CUTOFF = 0.20 # Calibrated with leaderboard +- 0.001
     mConfig = {
@@ -56,3 +54,4 @@ else:
     NJOBS = -1
 
 float_formatter = lambda x: "%.3f" % x
+

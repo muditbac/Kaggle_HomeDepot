@@ -1,3 +1,5 @@
+/features_cleaned
+/datasets_spell
 .idea/
 *.pyc
 submission
@@ -7,3 +9,5 @@ processing
 debug_processing
 features
 datasets
+genFeat_counting_feat.py
+genFeat_distance_feat.py
