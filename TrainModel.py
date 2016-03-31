@@ -1,3 +1,5 @@
+from sklearn.linear_model import ElasticNet
+from sklearn.svm import SVR, LinearSVR
 from utilities import RMSE
 
 __author__ = 'mudit'
@@ -20,25 +22,24 @@ from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
 from utilities import change_to_int
 # random.seed(2016)
 
-model_name = 'xtree'
-# Available options ['tree', 'rfr', 'xgb', 'xtree', 'gbr', 'knn']
+model_name = 'elastic'
+# Available options ['tree', 'rfr', 'xgb', 'xtree', 'gbr', 'knn', 'svr']
 
 # Choosing parameters on subsets.
-# X_train = np.load(INPUT_PATH + 'X_train.numpy')
-# X_test = np.load(INPUT_PATH + 'X_test.numpy')
-# y_train = np.load(INPUT_PATH + 'y_train.numpy')
+X_train = np.load(DATASET_PATH + 'svd50x3_dist_train.npy')
+# X_test = np.load(INPUT_PATH + 'X_test.numpy')[10000]
+y_train = np.load(DATASET_PATH + 'Y_train.npy')
 # id_test = np.load(INPUT_PATH + 'id_test.numpy')
+#
+y_train = (y_train - 1.0) / 2.0
 
-# y_train = (y_train - 1.0) / 2.0
-
-# X_train, X_test, y_train, y_test = train_test_split(
-#     X_train, y_train, test_size=0.5, random_state=configs['seed'])
+X_train, X_test, y_train, y_test = train_test_split(X_train, y_train, test_size=0.9, random_state=configs['seed'])
 
 # For Tuning Final Model
-X_train = np.load(FOLD_PATH + 'BlendTrain_X.npy')
-X_test = np.load(FOLD_PATH + 'BlendTest_X.npy')
-y_train = np.load(FOLD_PATH + 'BlendTrain_Y.npy')
-y_test = np.load(FOLD_PATH + 'BlendTest_Y.npy')
+# X_train = np.load(FOLD_PATH + 'BlendTrain_X.npy')
+# X_test = np.load(FOLD_PATH + 'BlendTest_X.npy')
+# y_train = np.load(FOLD_PATH + 'BlendTrain_Y.npy')
+# y_test = np.load(FOLD_PATH + 'BlendTest_Y.npy')
 
 if model_name == 'rfr':
     level0 = RandomForestRegressor(n_estimators=50, n_jobs=-1, random_state=2016, verbose=1)
@@ -74,14 +75,14 @@ elif model_name == 'xgb':
     # {'max_depth': 7.0, 'learning+rate': 0.075000000000000011, 'gamma': 0.55000000000000004, 'colsample_bytree': 0.90000000000000002, 'n_estimators': 263.0, 'subsample': 0.65000000000000002} : 0.46..
 elif model_name == 'tree':
     level0 = DecisionTreeRegressor(random_state=2016)
-    h_param_grid = {#'max_features': hp.quniform('max_features', 50, 100, 1),
-                    'max_depth': hp.quniform('max_depth', 1, 15, 1)}
+    h_param_grid = {  # 'max_features': hp.quniform('max_features', 50, 100, 1),
+                      'max_depth': hp.quniform('max_depth', 1, 15, 1)}
     # {'max_features': 95.0, 'max_depth': 6.0} : 0.47...
 elif model_name == 'xtree':
     level0 = ExtraTreesRegressor(random_state=2016, n_jobs=-1)
-    h_param_grid = {# 'max_features': hp.quniform('max_features', 50, 100, 1),
-                    'max_depth': hp.quniform('max_depth', 5, 7, 1),
-                    'n_estimators': hp.quniform('n_estimators', 100, 1000, 1)}
+    h_param_grid = {  # 'max_features': hp.quniform('max_features', 50, 100, 1),
+                      'max_depth': hp.quniform('max_depth', 5, 7, 1),
+                      'n_estimators': hp.quniform('n_estimators', 100, 1000, 1)}
     # {'max_depth': 7.0, 'n_estimators': 478.0, 'max_features': 99.0}
 elif model_name == 'gbr':
     level0 = GradientBoostingRegressor(random_state=2016, verbose=20)
@@ -97,6 +98,22 @@ elif model_name == 'knn':
                     'd2': hp.loguniform('d2', -4, 0.1),
                     'lr': hp.quniform('lr', 0, 1, 0.1)
                     }
+elif model_name == 'svr':
+    level0 = SVR()
+    h_param_grid \
+        = {
+        'C': hp.loguniform('C', -2, 10),
+        'gamma': hp.loguniform('gamma', -9, 3)
+    }
+#  {'C': 0.6298515416176004, 'gamma': 0.00043597115572928277}
+elif model_name == 'elastic':
+    level0 = ElasticNet()
+    h_param_grid \
+        = {
+        'alpha': hp.loguniform('alpha', -5, 5),
+        'l1_ratio': hp.quniform('l1_ratio', 0, 1, 0.1)
+    }
+#  {'C': 0.6298515416176004, 'gamma': 0.00043597115572928277}
 
 
 # Grid Search Implementation
@@ -112,7 +129,7 @@ elif model_name == 'knn':
 # Hyperopt Implementatation
 def score(params):
     # TODO Issue resolved https://github.com/hyperopt/hyperopt/issues/253
-    change_to_int(params, ['max_depth', 'n_estimators'])
+    # change_to_int(params, ['max_depth', 'n_estimators'])
     # change_to_int(params, ['max_depth', 'max_features', 'n_estimators'])
     # change_to_int(params, ['max_depth', 'max_features'])
     print('Parameters :')

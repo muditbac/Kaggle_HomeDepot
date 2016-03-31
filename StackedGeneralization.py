@@ -63,6 +63,7 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import ExtraTreesRegressor, RandomForestRegressor
 from sklearn.neighbors import KNeighborsRegressor
+from sklearn.svm import SVR
 from sklearn.tree import DecisionTreeRegressor
 
 # from SimpleNN import KerasNN
@@ -119,10 +120,12 @@ def run(X, Y, X_test=None):
 
         ('LinearRegression', LinearRegression(n_jobs=NJOBS)),
         ('ElasticNetRegression', ElasticNet(alpha=0.2, l1_ratio=0.5)),
+        ('ElasticNetRegressionTuned5', ElasticNet(alpha=0.5, l1_ratio=0.008)),
         # ('ElasticNetRegressionAX', ElasticNet(alpha=0.1, l1_ratio=0.1)),
         # ('ElasticNetRegressionAXB', ElasticNet(alpha=0.1, l1_ratio=0.9)),
-        ('SGDRegressor', SGDRegressor()),
-        # ('SVRRegression', SVR(verbose=not configs['silent'])),
+        # ('SGDRegressor', SGDRegressor()),
+        # ('SVRRegressionTuned', SVR(C = 0.6298515416176004, gamma = 0.00043597115572928277, verbose=not configs['silent'])), # {'C': 0.6298515416176004, 'gamma': 0.00043597115572928277}
+
         ('RandomForestRegressor', RandomForestRegressor(n_estimators=int(mConfig['rfr_n_trees'] / 5), n_jobs=NJOBS,
                                                         verbose=not configs['silent'])),
         ('ExtraTreesRegressor',
@@ -191,25 +194,25 @@ def run(X, Y, X_test=None):
                                         n_estimators=mConfig['xgb_n_trees:linear'],
                                         max_depth=5
                                         )),
-        ('XGBLinearBReg5A1', xgb.XGBRegressor(learning_rate=0.075,
-                                              silent=configs['silent'],
-                                              objective="reg:linear",
-                                              nthread=NJOBS,
-                                              gamma=0.65,
-                                              min_child_weight=5,
-                                              max_delta_step=1,
-                                              subsample=0.55,
-                                              colsample_bytree=0.9,
-                                              colsample_bylevel=1,
-                                              reg_alpha=1,
-                                              reg_lambda=5,
-                                              scale_pos_weight=1,
-                                              base_score=0.5,
-                                              seed=0,
-                                              missing=None,
-                                              n_estimators=mConfig['xgb_n_trees:linear'],
-                                              max_depth=5
-                                              )),
+        # ('XGBLinearBg62', xgb.XGBRegressor(learning_rate=0.05,
+        #                                       silent=configs['silent'],
+        #                                       objective="reg:linear",
+        #                                       nthread=NJOBS,
+        #                                       gamma=0.7,
+        #                                       min_child_weight=5,
+        #                                       max_delta_step=1,
+        #                                       subsample=0.6,
+        #                                       colsample_bytree=0.6,
+        #                                       colsample_bylevel=1,
+        #                                       reg_alpha=0.5,
+        #                                       reg_lambda=1,
+        #                                       scale_pos_weight=1,
+        #                                       base_score=0.5,
+        #                                       seed=0,
+        #                                       missing=None,
+        #                                       n_estimators=mConfig['xgb_n_trees:linear'],
+        #                                       max_depth=5
+        #                                       )),
         ('XGBLogistic', xgb.XGBRegressor(learning_rate=0.075,
                                          silent=configs['silent'],
                                          objective="reg:logistic",
@@ -368,8 +371,8 @@ def run_tests(X_train, y_train):
 
 # TODO Un-tune individual model
 if __name__ == '__main__':
-    dataset_name = 'svd50x3_dist'
-    model_name = '4fold_stacked_100estimators_re2'
+    dataset_name = 'svd50x3_1plogx_product_id'
+    model_name = '4fold_stacked_100estimators_word2vec_1plogx_check'
     if DEBUG:
         model_name = 'test_' + model_name
     FOLD_PATH_NEW = FOLD_PATH + model_name + '/'
@@ -381,7 +384,6 @@ if __name__ == '__main__':
     y_train = np.load('%sY_train.npy' % DATASET_PATH)
     id_test = np.load('%sid_test.npy' % DATASET_PATH)
 
-    # TODO Change the model_name inside this function if X_test is passed
     Y_test = run(X_train, y_train, X_test)
     if not DEBUG:
         pd.DataFrame({"id": id_test, "relevance": Y_test}).to_csv('submission/submission_stacked_%s.csv' % time.time(),

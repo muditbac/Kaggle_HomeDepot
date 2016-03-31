@@ -11,6 +11,7 @@ def generate_dataset(features, dataset_name):
     for i, (feature, transformer) in enumerate(features):
 
         x_all = np.load('%s%s.npy' % (FEATURES_PATH, feature))
+        x_all = transformer.fit_transform(x_all)
 
         if len(x_all.shape) == 1:
             x_all.shape = (x_all.shape[0], 1)

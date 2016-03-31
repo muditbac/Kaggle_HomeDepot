@@ -77,6 +77,9 @@ df_all = df_all.fillna(' ')
 
 # Extracting common features
 
+def add_product_uid(df_all):
+    save_feature(df_all['product_uid'], 'product_uid')
+
 def add_length_features(df_all):
     # Length Features
     for f in raw_features:
@@ -169,10 +172,12 @@ if __name__ == '__main__':
     #         else:
     #             final.append(word)
     #     return ' '.join(final)
+    #
+    #
+    # df_all[key_query] = df_all[key_query].map(lambda x: spell_check(x))
+    # print('- Query Spelling Corrected')
 
-
-    df_all[key_query] = df_all[key_query].map(lambda x: spell_check(x))
-    print('- Query Spelling Corrected')
+    add_product_uid(df_all)
 
     add_length_features(df_all)
     print('- Length Features Added')
