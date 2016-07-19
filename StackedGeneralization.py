@@ -371,8 +371,8 @@ def run_tests(X_train, y_train):
 
 # TODO Un-tune individual model
 if __name__ == '__main__':
-    dataset_name = 'svd50x3_1plogx_product_id'
-    model_name = '4fold_stacked_100estimators_word2vec_1plogx_check'
+    dataset_name = 'svd50x3_1plogx_deep_net'
+    model_name = '4fold_stacked_100estimators_word2vec_1plogx_deep_net_with_test'
     if DEBUG:
         model_name = 'test_' + model_name
     FOLD_PATH_NEW = FOLD_PATH + model_name + '/'

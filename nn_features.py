@@ -92,6 +92,6 @@ if __name__ == '__main__':
     vocab_vectors, query_train, query_test = prepare_query_vectors(df_train, df_test)
     print('- Query Vector Prepared')
 
-    pickle.dump([train_product_nnid, test_product_nnid, output, np.array(product_id_to_vector.values()),
+    pickle.dump([train_product_nnid, test_product_nnid, output, np.array(list(product_id_to_vector.values())),
                  product_uid_to_nnid, vocab_vectors, query_train, query_test], open(OUTPUT_PATH + 'nn.pickle', 'wb'))
     print('- Data dumped to nn.pickle')

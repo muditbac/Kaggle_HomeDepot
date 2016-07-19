@@ -24,7 +24,7 @@ key_description = 'product_description'
 key_brand = 'brand'
 raw_features = [key_query, key_title, key_description, key_brand]
 
-DEBUG = True
+DEBUG = False
 
 if DEBUG:
     PROCESS_PATH = 'processing/'

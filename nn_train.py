@@ -64,7 +64,8 @@ def train_keras_nn():
     graph.add_node(Dense(100, activation='sigmoid', W_regularizer=l2(r)), name='hidden0',
                    inputs=['LSTM', 'flatten'],
                    merge_mode="concat", concat_axis=1)
-    graph.add_node(Dense(1, activation='sigmoid', W_regularizer=l2(r)), name='output', input='hidden0', create_output=True)
+    graph.add_node(Dense(1, activation='sigmoid', W_regularizer=l2(r)), name='output', input='hidden0',
+                   create_output=True)
 
     graph.compile(optimizer='adam', loss={'output': 'mse'})
 
@@ -74,11 +75,13 @@ def train_keras_nn():
     get_lstm_output = theano.function([graph.inputs['query_indexes'].input], lstm.get_output(train=False))
 
     graph.fit(
-        {'train_product_nnid': train_product_nnid, 'query_indexes': query_train,
+        {'train_product_nnid': np.concatenate([train_product_nnid, test_product_nnid]),
+         'query_indexes': np.concatenate([query_train, query_test]),
          'output': (output - 1) / 2},
-        batch_size=1000, nb_epoch=100, verbose=1, shuffle=True, callbacks=[select_best], validation_split=0.1)
+        batch_size=5000, nb_epoch=30, verbose=1, shuffle=True, callbacks=[select_best], validation_split=0.1)
 
     return graph, get_lstm_output
+
 
 # TODO Rewrite with new structure
 def predict_on_test(df_train, df_test, graph, ):
@@ -125,6 +128,7 @@ def predict_on_test(df_train, df_test, graph, ):
     # t_Y.to_csv(OUTPUT_PATH + 'X_features_test.csv', index=False)
     pass
 
+
 # TODO Rewrite with new structure
 # Evaluating error entries
 def predict_evaluate_error_terms(df_train, graph):
@@ -159,9 +163,9 @@ def save_tuned_weights(graph, get_lstm_output):
     query_vecs = []
     len_all = len(query_all)
     size = 10000
-    n = len_all/size + 1
+    n = int(len_all / size) + 1
     for i in range(n):
-        l = get_lstm_output(query_all[size*i:size*(i+1)])
+        l = get_lstm_output(query_all[size * i:size * (i + 1)])
         query_vecs.append(l)
     query_vecs = np.concatenate(query_vecs)
 
@@ -172,9 +176,12 @@ def save_tuned_weights(graph, get_lstm_output):
 if __name__ == "__main__":
     df_train = pd.read_csv(INPUT_PATH + 'df_train2.csv')
     df_test = pd.read_csv(INPUT_PATH + 'df_test2.csv')
-    [train_product_nnid, test_product_nnid, output, product_vectors, prod, vocab_vectors, query_train, query_test] = pickle.load(
+    [train_product_nnid, test_product_nnid, output, product_vectors, prod, vocab_vectors, query_train,
+     query_test] = pickle.load(
         open(OUTPUT_PATH + 'nn.pickle', 'rb'))
 
+    test_output = pd.read_csv('submission/submission_stacked_1459382729.0182269.csv')
+    output = np.concatenate([output, test_output['relevance'].values])
 
     model, get_lstm_output = train_keras_nn()
     print('- Deep Net Trained')
