@@ -43,7 +43,6 @@ def run(X, Y, X_test=None):
 
     Y = (Y - 1) / 2
 
-    # TODO: Same Fold Informations beacause the data is being save in random format whose index order is not save
     if DEBUG:
         # dev_cutoff = int(len(Y) * TEST_CUTOFF)
 
@@ -62,34 +61,19 @@ def run(X, Y, X_test=None):
 
     # Our level 0 classifiers
     clfs = [
-        # ('KerasSimpleNN',KerasNN(nb_epoch=150, batch_size=100000)),
-        # ('SimpleTransform', SimpleTransform()),
         ('BayesianRidge', BayesianRidge(alpha_1=1e-6, alpha_2=1e-6, verbose=not configs['silent'])),
         ('BayesianRidgeA0', BayesianRidge(alpha_1=1e0, alpha_2=1e-6, verbose=not configs['silent'])),
-        # ('FactorizationMachines', pylibfm.FM()),
-        # ('Ridge', Ridge(alpha=1e-7)),        ('ExtraTreesRegressor',
 
 
         ('LinearRegression', LinearRegression(n_jobs=NJOBS)),
         ('ElasticNetRegression', ElasticNet(alpha=0.2, l1_ratio=0.5)),
         ('ElasticNetRegressionTuned5', ElasticNet(alpha=0.5, l1_ratio=0.008)),
-        # ('ElasticNetRegressionAX', ElasticNet(alpha=0.1, l1_ratio=0.1)),
-        # ('ElasticNetRegressionAXB', ElasticNet(alpha=0.1, l1_ratio=0.9)),
-        # ('SGDRegressor', SGDRegressor()),
-        # ('SVRRegressionTuned', SVR(C = 0.6298515416176004, gamma = 0.00043597115572928277, verbose=not configs['silent'])), # {'C': 0.6298515416176004, 'gamma': 0.00043597115572928277}
-
         ('RandomForestRegressor', RandomForestRegressor(n_estimators=int(mConfig['rfr_n_trees'] / 5), n_jobs=NJOBS,
                                                         verbose=not configs['silent'])),
         ('ExtraTreesRegressor',
          ExtraTreesRegressor(n_estimators=mConfig['etr_n_trees'], n_jobs=NJOBS, verbose=not configs['silent'],
                              max_features=99,
                              max_depth=7)),
-        # ('KNN', KNeighborsRegressor(n_jobs=NJOBS, n_neighbors=5)),
-        # ('KNN50', KNeighborsRegressor(n_jobs=NJOBS, n_neighbors=50)),
-        # ('KNN25', KNeighborsRegressor(n_jobs=NJOBS, n_neighbors=25)),
-        # ('KNN100', KNeighborsRegressor(n_jobs=NJOBS, n_neighbors=100)),
-        # ('KNN200', KNeighborsRegressor(n_jobs=NJOBS, n_neighbors=200)),
-        # ('KNN512', KNeighborsRegressor(n_jobs=NJOBS, n_neighbors=512)),
         ('DecisionTreeRegressor', DecisionTreeRegressor(max_depth=6, max_features=99)),
         ('DecisionTreeRegressor5', DecisionTreeRegressor(max_depth=5, max_features=99)),
         ('DecisionTreeRegressor7', DecisionTreeRegressor(max_depth=7, max_features=99)),
@@ -97,17 +81,6 @@ def run(X, Y, X_test=None):
         ('DecisionTreeRegressor3', DecisionTreeRegressor(max_depth=3, max_features=99)),
         ('DecisionTreeRegressor2', DecisionTreeRegressor(max_depth=2, max_features=99)),
         ('DecisionTreeRegressor1', DecisionTreeRegressor(max_depth=1, max_features=99)),
-        # ('DecisionTreeRegressor6-max', DecisionTreeRegressor(max_depth=6)),
-        # ('DecisionTreeRegressor1-50', DecisionTreeRegressor(max_depth=1, max_features=50)),
-        # ('DecisionTreeRegressor1-20', DecisionTreeRegressor(max_depth=1, max_features=20)),
-        # Highly Correlated with other models
-        # ('GradientBoostingRegressor', GradientBoostingRegressor(n_estimators=mConfig['gbr_n_trees'],
-        #                                                         max_depth=9,
-        #                                                         learning_rate=0.025,
-        #                                                         max_features=85,
-        #                                                         subsample=0.85,
-        #                                                         verbose=not configs['silent'])),
-        # TODO Try by changing other parameters
         ('XGBLinear', xgb.XGBRegressor(learning_rate=0.075,
                                        silent=configs['silent'],
                                        objective="reg:linear",
@@ -146,25 +119,6 @@ def run(X, Y, X_test=None):
                                         n_estimators=mConfig['xgb_n_trees:linear'],
                                         max_depth=5
                                         )),
-        # ('XGBLinearBg62', xgb.XGBRegressor(learning_rate=0.05,
-        #                                       silent=configs['silent'],
-        #                                       objective="reg:linear",
-        #                                       nthread=NJOBS,
-        #                                       gamma=0.7,
-        #                                       min_child_weight=5,
-        #                                       max_delta_step=1,
-        #                                       subsample=0.6,
-        #                                       colsample_bytree=0.6,
-        #                                       colsample_bylevel=1,
-        #                                       reg_alpha=0.5,
-        #                                       reg_lambda=1,
-        #                                       scale_pos_weight=1,
-        #                                       base_score=0.5,
-        #                                       seed=0,
-        #                                       missing=None,
-        #                                       n_estimators=mConfig['xgb_n_trees:linear'],
-        #                                       max_depth=5
-        #                                       )),
         ('XGBLogistic', xgb.XGBRegressor(learning_rate=0.075,
                                          silent=configs['silent'],
                                          objective="reg:logistic",
@@ -225,7 +179,6 @@ def run(X, Y, X_test=None):
     ]
 
     # Ready for cross validation
-    # skf = list(StratifiedKFold(Y_dev, n_folds=n_folds, shuffle=True))
     if DEBUG:
         skf = pkl.load(open(FOLD_PATH + 'split_folds.pkl', 'rb'))
     else:
@@ -286,8 +239,6 @@ def run(X, Y, X_test=None):
     bclf = LinearRegression(n_jobs=NJOBS)
     degree = 2
     bclf = make_pipeline(PolynomialFeatures(degree, interaction_only=True), Ridge(alpha=0.1))
-    # bclf = Ridge()
-    # score=cross_val_score(bclf, verbose=20, cv=2, X=blend_train, y=Y_dev)
 
     bclf.fit(blend_train, Y_dev)
 
@@ -321,7 +272,6 @@ def run_tests(X_train, y_train):
     pass
 
 
-# TODO Un-tune individual model
 if __name__ == '__main__':
     dataset_name = 'svd50x3_dist'
     model_name = '4fold_stacked_100estimators_re2'

@@ -26,6 +26,8 @@ Kaggle_HomeDepot
 └───input
     │   train.csv
     │   test.csv
+    │   attributes.csv
+    │   product_descriptions.csv
     │   sample_submission.csv
 └───scripts
     │   README.md
@@ -36,13 +38,15 @@ Now, To regenerate the results run these files mentioned below respectively.
 
 #### Data Pre-Processing and Feature Extraction
 
+- `generate_settings.py` - Generates Settings for the project.
+- `preprocess.py` - Initial Clearning of Data
 - `feature_generater.py` - Clean Data and generates TF-IDF features
 - `features_distance.py` - Generates distance and counting features
 - `generate_dataset_svd50x3_distance.py` - Combine all the individual features and generates a dataset.
 
 #### Machine Learning and Stacked Generalization
 
-- `StackedGeneralization.py` - To train all the machine learning modules and stacks all the results to create the submission.
+- `stacked_generalization.py` - To train all the machine learning modules and stacks all the results to create the submission.
 
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
 
