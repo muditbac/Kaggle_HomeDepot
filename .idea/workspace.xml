@@ -1,0 +1,740 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="0381369a-0256-4d7f-adec-d95f16b09770" name="Default" comment="">
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\.gitignore" afterPath="$PROJECT_DIR$/scripts/.gitignore" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\Future Implementaions" afterPath="$PROJECT_DIR$/scripts/Future Implementaions" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\GenerateSettings.py" afterPath="$PROJECT_DIR$/scripts/GenerateSettings.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\README.md" afterPath="$PROJECT_DIR$/scripts/README.md" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\SimpleNN.py" afterPath="$PROJECT_DIR$/scripts/SimpleNN.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\StackedGeneralization.py" afterPath="$PROJECT_DIR$/scripts/StackedGeneralization.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\TrainModel.py" afterPath="$PROJECT_DIR$/scripts/TrainModel.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\configs.py" afterPath="$PROJECT_DIR$/scripts/configs.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\dependencies.txt" afterPath="$PROJECT_DIR$/scripts/dependencies.txt" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\feature_generater.py" afterPath="$PROJECT_DIR$/scripts/feature_generater.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\feature_importance.py" afterPath="$PROJECT_DIR$/scripts/feature_importance.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\features_distance.py" afterPath="$PROJECT_DIR$/scripts/features_distance.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\generate_dataset.py" afterPath="$PROJECT_DIR$/scripts/generate_dataset.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\generate_dataset_svd50x3.py" afterPath="$PROJECT_DIR$/scripts/generate_dataset_svd50x3.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\generate_dataset_svd50x3_distance.py" afterPath="$PROJECT_DIR$/scripts/generate_dataset_svd50x3_distance.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\load_data.py" afterPath="$PROJECT_DIR$/scripts/load_data.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\load_preprocessed.py" afterPath="$PROJECT_DIR$/scripts/load_preprocessed.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\ngram.py" afterPath="$PROJECT_DIR$/scripts/ngram.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\nn_features.py" afterPath="$PROJECT_DIR$/scripts/nn_features.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\nn_train.py" afterPath="$PROJECT_DIR$/scripts/nn_train.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\norvig_spell_checker.py" afterPath="$PROJECT_DIR$/scripts/norvig_spell_checker.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\preprocess.py" afterPath="$PROJECT_DIR$/scripts/preprocess.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\spelling.txt" afterPath="$PROJECT_DIR$/scripts/spelling.txt" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\support\SVR.py" afterPath="$PROJECT_DIR$/scripts/support/SVR.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\support\XGBandRFR.ipynb" afterPath="$PROJECT_DIR$/scripts/support/XGBandRFR.ipynb" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\support\XGBandRFR_1.py" afterPath="$PROJECT_DIR$/scripts/support/XGBandRFR_1.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\support\XGBandRFR_2.py" afterPath="$PROJECT_DIR$/scripts/support/XGBandRFR_2.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\support\XGBoost_kaggle.py" afterPath="$PROJECT_DIR$/scripts/support/XGBoost_kaggle.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\support\hyperopt_xgboost.py" afterPath="$PROJECT_DIR$/scripts/support/hyperopt_xgboost.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\support\kaggle_data_mining.py" afterPath="$PROJECT_DIR$/scripts/support/kaggle_data_mining.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\support\spell_check.py" afterPath="$PROJECT_DIR$/scripts/support/spell_check.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\utilities.py" afterPath="$PROJECT_DIR$/scripts/utilities.py" />
+      <change type="MOVED" beforePath="F:\data\kaggle\home-depot-product-search-relevance\scripts\word2vec.py" afterPath="$PROJECT_DIR$/scripts/word2vec.py" />
+    </list>
+    <ignored path="scripts.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <ignored path=".idea/dataSources.local.xml" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/scripts$nn_features.coverage" NAME="nn_features Coverage Results" MODIFIED="1459433740236" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/scripts$spell_check.coverage" NAME="spell_check Coverage Results" MODIFIED="1458281391884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/scripts$nn_train.coverage" NAME="nn_train Coverage Results" MODIFIED="1458647448444" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/scripts$GenerateSettings.coverage" NAME="GenerateSettings Coverage Results" MODIFIED="1459100637054" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/scripts$XGBandRFR_1.coverage" NAME="XGBandRFR_1 Coverage Results" MODIFIED="1458397798750" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/scripts$preprocess.coverage" NAME="preprocess Coverage Results" MODIFIED="1458383961478" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/scripts$generate_dataset_svd50x3_distance.coverage" NAME="generate_dataset_svd50x3_distance Coverage Results" MODIFIED="1459502470077" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/scripts$spelling_correct.coverage" NAME="spelling_correct Coverage Results" MODIFIED="1458740635550" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/scripts$1.coverage" NAME="1 Coverage Results" MODIFIED="1458302318395" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="DatabaseView">
+    <option name="FLATTEN" value="false" />
+    <option name="GROUP_BY_TYPE" value="true" />
+    <option name="SORT_CHILDREN" value="false" />
+    <option name="SHOW_TABLE_CONSTRAINTS" value="true" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="scripts" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="Mudit Bachhawat &lt;mudit5bachhawat@gmail.com&gt;" />
+        <option value="Mudit Bachhawat" />
+      </list>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="118f85dbd2f979110c20c7c139855a7b11d8e313" />
+      </map>
+    </option>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/spell_check.py" />
+        <option value="$PROJECT_DIR$/1.py" />
+        <option value="$PROJECT_DIR$/XGBandRFR_1.py" />
+        <option value="$PROJECT_DIR$/XGBBandRFR_2.py" />
+        <option value="$PROJECT_DIR$/.ipynb_checkpoints/feature_generater.py" />
+        <option value="$PROJECT_DIR$/kaggle_data_mining.py" />
+        <option value="$PROJECT_DIR$/XGBandRFR.ipynb" />
+        <option value="$PROJECT_DIR$/xgboost_nn.py" />
+        <option value="$PROJECT_DIR$/feature_importance.py" />
+        <option value="$PROJECT_DIR$/local_paths.py" />
+        <option value="$PROJECT_DIR$/spelling_correct.py" />
+        <option value="$PROJECT_DIR$/short_sentence_similarity.py" />
+        <option value="$PROJECT_DIR$/SVR.py" />
+        <option value="$PROJECT_DIR$/RandomForestRegressor.py" />
+        <option value="$PROJECT_DIR$/.fuse_hidden0000376e0000001e" />
+        <option value="$PROJECT_DIR$/XGBoost_kaggle.py" />
+        <option value="$PROJECT_DIR$/load_data.py" />
+        <option value="/usr/local/lib/python3.4/dist-packages/hyperopt/base.py" />
+        <option value="/usr/local/lib/python3.4/dist-packages/hyperopt/pyll_utils.py" />
+        <option value="$PROJECT_DIR$/utils.py" />
+        <option value="$PROJECT_DIR$/hyperopt_xgboost.py" />
+        <option value="$PROJECT_DIR$/SimpleNN.py" />
+        <option value="$PROJECT_DIR$/approaches" />
+        <option value="$PROJECT_DIR$/utilities.py" />
+        <option value="$PROJECT_DIR$/generate_dataset_svd50x3.py" />
+        <option value="$PROJECT_DIR$/genFeat_distance_feat.py" />
+        <option value="$PROJECT_DIR$/features_distance.py" />
+        <option value="$PROJECT_DIR$/preprocess.py" />
+        <option value="$PROJECT_DIR$/norvig_spell_checker.py" />
+        <option value="$PROJECT_DIR$/load_preprocessed.py" />
+        <option value="$PROJECT_DIR$/GenerateSettings.py" />
+        <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/TrainModel.py" />
+        <option value="$PROJECT_DIR$/word2vec.py" />
+        <option value="$PROJECT_DIR$/support/nn_train.py" />
+        <option value="$PROJECT_DIR$/feature_generater.py" />
+        <option value="$PROJECT_DIR$/generate_dataset.py" />
+        <option value="$PROJECT_DIR$/nn_features.py" />
+        <option value="$PROJECT_DIR$/configs.py" />
+        <option value="$PROJECT_DIR$/nn_train.py" />
+        <option value="$PROJECT_DIR$/StackedGeneralization.py" />
+        <option value="$PROJECT_DIR$/dependencies.txt" />
+        <option value="$PROJECT_DIR$/generate_dataset_svd50x3_distance.py" />
+        <option value="$PROJECT_DIR$/README.md" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+  </component>
+  <component name="NamedScopeManager">
+    <order />
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="70" />
+    <option name="y" value="-8" />
+    <option name="width" value="1538" />
+    <option name="height" value="916" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="0" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+    </navigator>
+    <panes>
+      <pane id="Scratches" />
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scripts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scripts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scripts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="recentsLimit" value="5" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.splitter.proportion" value="0.2" />
+    <property name="restartRequiresConfirmation" value="true" />
+    <property name="FullScreen" value="false" />
+    <property name="last.edited.regexp" value="n.A" />
+    <property name="SearchEverywhereHistoryKey" value="gene&#9;FILE&#9;file:///media/mudit/Working/data/kaggle/home-depot-product-search-relevance/scripts/generate_dataset.py&#10;gensim&#9;null&#9;null&#10;con&#9;FILE&#9;file:///media/mudit/Working/data/kaggle/home-depot-product-search-relevance/scripts/configs.py&#10;feature&#9;FILE&#9;file:///media/mudit/Working/data/kaggle/home-depot-product-search-relevance/scripts/feature_generater.py&#10;generate&#9;FILE&#9;file:///media/mudit/Working/data/kaggle/home-depot-product-search-relevance/scripts/GenerateSettings.py&#10;config&#9;FILE&#9;file:///media/mudit/Working/data/kaggle/home-depot-product-search-relevance/scripts/configs.py&#10;LOAD&#9;FILE&#9;file:///media/mudit/Working/data/kaggle/home-depot-product-search-relevance/scripts/load_data.py" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/support" />
+      <recent name="$PROJECT_DIR$/submission" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.generate_dataset_svd50x3_distance">
+    <configuration default="false" name="nn_train" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="/usr/bin/python3.4" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="scripts" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/nn_train.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="spelling_correct" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="/usr/bin/python2.7" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="scripts" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/spelling_correct.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="GenerateSettings" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="/usr/bin/python2.7" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="scripts" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/GenerateSettings.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="generate_dataset_svd50x3_distance" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="/usr/bin/python2.7" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="scripts" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/generate_dataset_svd50x3_distance.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="nn_features" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="/usr/bin/python2.7" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="scripts" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/nn_features.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="DjangoTestsConfigurationType" factoryName="Django tests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="scripts" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="TARGET" value="" />
+      <option name="SETTINGS_FILE" value="" />
+      <option name="CUSTOM_SETTINGS" value="false" />
+      <option name="USE_OPTIONS" value="false" />
+      <option name="OPTIONS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
+      <method />
+    </configuration>
+    <configuration default="true" type="PyBehaveRunConfigurationType" factoryName="Behave">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="scripts" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="ADDITIONAL_ARGS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="PyLettuceRunConfigurationType" factoryName="Lettuce">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="scripts" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="ADDITIONAL_ARGS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="/usr/bin/python2.7" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="scripts" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <node-options />
+      <gulpfile />
+      <tasks />
+      <arguments />
+      <pass-parent-envs>true</pass-parent-envs>
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Attests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="scripts" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Doctests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="scripts" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Nosetests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="scripts" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Unittests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="scripts" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PUREUNITTEST" value="true" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="py.test">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="scripts" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="testToRun" value="" />
+      <option name="keywords" value="" />
+      <option name="params" value="" />
+      <option name="USE_PARAM" value="false" />
+      <option name="USE_KEYWORD" value="false" />
+      <method />
+    </configuration>
+    <list size="5">
+      <item index="0" class="java.lang.String" itemvalue="Python.nn_train" />
+      <item index="1" class="java.lang.String" itemvalue="Python.spelling_correct" />
+      <item index="2" class="java.lang.String" itemvalue="Python.GenerateSettings" />
+      <item index="3" class="java.lang.String" itemvalue="Python.generate_dataset_svd50x3_distance" />
+      <item index="4" class="java.lang.String" itemvalue="Python.nn_features" />
+    </list>
+    <recent_temporary>
+      <list size="5">
+        <item index="0" class="java.lang.String" itemvalue="Python.generate_dataset_svd50x3_distance" />
+        <item index="1" class="java.lang.String" itemvalue="Python.nn_features" />
+        <item index="2" class="java.lang.String" itemvalue="Python.GenerateSettings" />
+        <item index="3" class="java.lang.String" itemvalue="Python.spelling_correct" />
+        <item index="4" class="java.lang.String" itemvalue="Python.nn_train" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="StructureViewFactory">
+    <option name="ACTIVE_ACTIONS" value=",SHOW_FIELDS" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0381369a-0256-4d7f-adec-d95f16b09770" name="Default" comment="" />
+      <created>1458281094339</created>
+      <option name="number" value="Default" />
+      <updated>1458281094339</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Backup dated 23/03/2016">
+      <created>1458741479176</created>
+      <option name="number" value="00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1458741479176</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Backup dated 23/03/2016">
+      <created>1458741614502</created>
+      <option name="number" value="00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1458741614502</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Changing to Jason Miller Cleaning&#10;">
+      <created>1458761967977</created>
+      <option name="number" value="00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1458761967977</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Public Leader Board of 0.469&#10;Spelling Corrected&#10;Added Edit Distance Features&#10;Added n-gram matching features">
+      <created>1458817277614</created>
+      <option name="number" value="00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1458817277614</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Project Cleaned and Stacked Generalization Implemented">
+      <created>1458859892435</created>
+      <option name="number" value="00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1458859892435</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Models added in Stacked Generalization">
+      <created>1458885194461</created>
+      <option name="number" value="00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1458885194461</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Stacked Generalization updated for manual test data.">
+      <created>1458908377722</created>
+      <option name="number" value="00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1458908377722</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Project Cleaned">
+      <created>1458972871306</created>
+      <option name="number" value="00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1458972871306</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Project ReStructured">
+      <created>1458988758229</created>
+      <option name="number" value="00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1458988758229</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Project ReStructured">
+      <created>1459017564965</created>
+      <option name="number" value="00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1459017564965</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Merge remote-tracking branch 'origin/master'&#10;&#10;Conflicts:&#10;&#9;SimpleNN.py&#10;&#9;StackedGeneralization.py&#10;&#9;TrainModel.py&#10;&#9;configs.py&#10;&#9;spelling_correct.py&#10;&#9;xgboost_nn.py&#10;">
+      <created>1459045830733</created>
+      <option name="number" value="00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1459045830733</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Correlation Matrix Added">
+      <created>1459047078509</created>
+      <option name="number" value="00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1459047078509</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Future Implementations Added&#10;.gitignore Added">
+      <created>1459047476875</created>
+      <option name="number" value="00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1459047476875</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Blending Model Tuned&#10;Print Formatted">
+      <created>1459061273187</created>
+      <option name="number" value="00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1459061273187</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Features Extraction Restructured">
+      <created>1459151992636</created>
+      <option name="number" value="00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1459151992636</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Model Calibrated with leaderboard.">
+      <created>1459197040369</created>
+      <option name="number" value="00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1459197040369</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Added Distance Features">
+      <created>1459232686135</created>
+      <option name="number" value="00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1459232686135</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Added Distance Features">
+      <created>1459232733013</created>
+      <option name="number" value="00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1459232733013</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Added Distance Features">
+      <created>1459232806352</created>
+      <option name="number" value="00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1459232806352</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Best Submission&#10;- product_uid added&#10;- generate_dataset transformation bug resolved&#10;- word2vec similarity added&#10;- Keras NN Code Ported&#10;- Stacked Generalization Updated">
+      <created>1459435888594</created>
+      <option name="number" value="00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1459435888594</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Deep Learning Model Implemented">
+      <created>1459492683575</created>
+      <option name="number" value="00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1459492683575</updated>
+    </task>
+    <task id="LOCAL-00022" summary="README.md Updated&#10;Project Setup with Keras NN Features">
+      <created>1468933477030</created>
+      <option name="number" value="00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1468933477030</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="70" y="-8" width="1538" height="916" extended-state="6" />
+    <editor active="false" />
+    <layout>
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26281208" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32983193" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32976446" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.44012606" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.5204461" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.12152034" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.44957983" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32983193" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32983193" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_NEW_TODO" value="false" />
+    <MESSAGE value="Backup dated 23/03/2016" />
+    <MESSAGE value="Changing to Jason Miller Cleaning&#10;" />
+    <MESSAGE value="Public Leader Board of 0.469&#10;Spelling Corrected&#10;Added Edit Distance Features&#10;Added n-gram matching features" />
+    <MESSAGE value="Project Cleaned and Stacked Generalization Implemented" />
+    <MESSAGE value="Models added in Stacked Generalization" />
+    <MESSAGE value="Stacked Generalization updated for manual test data." />
+    <MESSAGE value="Project Cleaned" />
+    <MESSAGE value="Project ReStructured" />
+    <MESSAGE value="Merge remote-tracking branch 'origin/master'&#10;&#10;Conflicts:&#10;&#9;SimpleNN.py&#10;&#9;StackedGeneralization.py&#10;&#9;TrainModel.py&#10;&#9;configs.py&#10;&#9;spelling_correct.py&#10;&#9;xgboost_nn.py&#10;" />
+    <MESSAGE value="Correlation Matrix Added" />
+    <MESSAGE value="Future Implementations Added&#10;.gitignore Added" />
+    <MESSAGE value="Blending Model Tuned&#10;Print Formatted" />
+    <MESSAGE value="Features Extraction Restructured" />
+    <MESSAGE value="Model Calibrated with leaderboard." />
+    <MESSAGE value="Added Distance Features" />
+    <MESSAGE value="Project Restructured" />
+    <MESSAGE value="Best Submission&#10;- product_uid added&#10;- generate_dataset transformation bug resolved&#10;- word2vec similarity added&#10;- Keras NN Code Ported&#10;- Stacked Generalization Updated" />
+    <MESSAGE value="Deep Learning Model Implemented" />
+    <MESSAGE value="README.md Updated&#10;Project Setup with Keras NN Features" />
+    <option name="LAST_COMMIT_MESSAGE" value="README.md Updated&#10;Project Setup with Keras NN Features" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <option name="time" value="4" />
+    </breakpoint-manager>
+    <watches-manager />
+  </component>
+</project>
