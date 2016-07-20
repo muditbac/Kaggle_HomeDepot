@@ -6,55 +6,7 @@ readable code that demonstrates this technique. You may find the pseudocode in v
 are all each kind of different.
 
 Author: Eric Chio "log0" <im.ckieric@gmail.com>
-
-======================================================================================================
-Summary:
-
-Just to test an implementation of stacking. Using a cross-validated random forest and SVMs, I was
-only able to achieve an accuracy of about 88% (with 1000 trees and up). Using stacked generalization 
-I have seen a maximum of 93.5% accuracy. It does take runs to find it out though. This uses only 
-(10, 20, 10) trees for the three classifiers.
-
-This code is heavily inspired from the code shared by Emanuele (https://github.com/emanuele) , but I
-have cleaned it up to makeit available for easy download and execution.
-
-======================================================================================================
-Methodology:
-
-Three classifiers (RandomForestRegressor, ExtraTreesRegressor and a GradientBoostingRegressor
-are built to be stacked by a LogisticRegression in the end.
-
-Some terminologies first, since everyone has their own, I'll define mine to be clear:
-- DEV SET, this is to be split into the training and validation data. It will be cross-validated.
-- TEST SET, this is the unseen data to validate the generalization error of our final classifier. This
-set will never be used to train.
-
-======================================================================================================
-Log Output:
-
-X_test.shape = (62L, 6L)
-blend_train.shape = (247L, 3L)
-blend_test.shape = (62L, 3L)
-Training classifier [0]
-Fold [0]
-Fold [1]
-Fold [2]
-Fold [3]
-Fold [4]
-Training classifier [1]
-Fold [0]
-Fold [1]
-Fold [2]
-Fold [3]
-Fold [4]
-Training classifier [2]
-Fold [0]
-Fold [1]
-Fold [2]
-Fold [3]
-Fold [4]
-Y_dev.shape = 247
-Accuracy = 0.935483870968
+Updated By: Mudit Bachhawat <mudit5bachhawat@gmail.com>
 
 
 """
@@ -371,8 +323,8 @@ def run_tests(X_train, y_train):
 
 # TODO Un-tune individual model
 if __name__ == '__main__':
-    dataset_name = 'svd50x3_1plogx_deep_net'
-    model_name = '4fold_stacked_100estimators_word2vec_1plogx_deep_net_with_test'
+    dataset_name = 'svd50x3_dist'
+    model_name = '4fold_stacked_100estimators_re2'
     if DEBUG:
         model_name = 'test_' + model_name
     FOLD_PATH_NEW = FOLD_PATH + model_name + '/'

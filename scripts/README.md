@@ -38,11 +38,11 @@ Now, To regenerate the results run these files mentioned below respectively.
 
 - `feature_generater.py` - Clean Data and generates TF-IDF features
 - `features_distance.py` - Generates distance and counting features
-- `generate_dataset_svd50x3.py` - Complies all the individual feature and generates a dataset.
+- `generate_dataset_svd50x3_distance.py` - Combine all the individual features and generates a dataset.
 
 #### Machine Learning and Stacked Generalization
 
-- `StackedGeneralization.py` - To train all the machine learning modules and stacks all the results to create submission.
+- `StackedGeneralization.py` - To train all the machine learning modules and stacks all the results to create the submission.
 
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
 
